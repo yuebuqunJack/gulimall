@@ -13,12 +13,21 @@ spring:
     url: jdbc:mysql://175.178.212.59:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-#  cloud:
-#    nacos:
-#      discovery:
-#        server-addr: localhost:8848
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    alicloud:
+      access-key: LTAI5t95sFwNdrGuoy2FMJtR
+      secret-key: VhLu77rWpm74QefRuJn7mlxsVcDq8Z
+      oss:
+        endpoint: oss-cn-shenzhen.aliyuncs.com
 
-#    sentinel:
+  #  alibaba.cloud.access-key=your-ak
+#  alibaba.cloud.secret-key=your-sk
+#  alibaba.cloud.oss.endpoint=***
+
+  #    sentinel:
 #      transport:
 #        #配置sentinel dashboard地址
 #        dashboard: localhost:8080
@@ -55,7 +64,7 @@ mybatis-plus:
 
 logging:
   level:
-    com.xunqi.gulimall: error
+    com.spower.gulimall: debug
 
 
 #暴露所有端点

@@ -3,6 +3,7 @@ package com.spower.gulimall.product;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 /**
  * 1、整合MyBatis-Plus
@@ -52,6 +53,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  *  1）、编写异常处理类，使用@ControllerAdvice。
  *  2）、使用@ExceptionHandler标注方法可以处理的异常。
  */
+@EnableDiscoveryClient
 @SpringBootApplication
 @MapperScan("com.spower.gulimall.product.dao")
 public class GulimallProductApplication {

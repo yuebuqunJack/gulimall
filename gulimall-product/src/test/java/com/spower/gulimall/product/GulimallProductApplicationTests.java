@@ -14,12 +14,18 @@ import java.util.List;
 
 @Slf4j
 @RunWith(SpringRunner.class)
+/**
+ * 注解的意义在于Test测试类要使用注入的类，比如@Autowired注入的类，
+ *
+ * 有了@RunWith(SpringRunner.class)这些类才能实例化到spring容器中，自动注入才能生效，
+ *
+ * 不然直接一个NullPointerExecption
+ */
 @SpringBootTest
 public class GulimallProductApplicationTests {
 
     @Resource
     private BrandService brandService;
-
 
     @Test
     public void contextLoads() {
@@ -31,10 +37,12 @@ public class GulimallProductApplicationTests {
 //        brandService.updateById(brandEntity);
 
         List<BrandEntity> list = brandService.list(new QueryWrapper<BrandEntity>().eq("brand_id", 1L));
-        list.forEach((item)->{
+        list.forEach((item) -> {
             System.out.println(item);
         });
     }
+
+
 
 
 }
