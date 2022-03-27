@@ -1,5 +1,7 @@
 package com.spower.gulimall.member.feign;
 
+import com.spower.common.to.SkuReductionTo;
+import com.spower.common.to.SpuBoundTo;
 import com.spower.common.utils.R;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,4 +15,7 @@ public interface CouponFeignService {
     @RequestMapping("/coupon/coupon/member/list")
     public R membercoupons();
 
+//    R saveSkuReduction(SkuReductionTo skuReductionTo);
+//
+//    R saveSpuBounds(SpuBoundTo spuBoundTo);
 }

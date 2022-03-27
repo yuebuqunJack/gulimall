@@ -9,9 +9,9 @@ import java.util.Map;
 /**
  * sku图片
  *
- * @author Jack.c
- * @email aa841264873@qq.com
- * @date 2022-03-17 02:24:21
+ * @author leifengyang
+ * @email leifengyang@gmail.com
+ * @date 2019-10-01 21:08:49
  */
 public interface SkuImagesService extends IService<SkuImagesEntity> {
 

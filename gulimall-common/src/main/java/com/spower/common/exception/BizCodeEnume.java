@@ -32,6 +32,7 @@ public enum BizCodeEnume {
     LOGINACCT_PASSWORD_EXCEPTION(15003, "账号或密码错误"),
     NO_STOCK_EXCEPTION(21000, "商品库存不足");
 
+
     private int code;
     private String msg;
 

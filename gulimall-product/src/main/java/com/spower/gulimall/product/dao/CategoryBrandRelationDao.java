@@ -8,12 +8,13 @@ import org.apache.ibatis.annotations.Param;
 /**
  * 品牌分类关联
  * 
- * @author Jack.c
- * @email sunlightcs@gmail.com
- * @date 2022-03-17 01:58:31
+ * @author leifengyang
+ * @email leifengyang@gmail.com
+ * @date 2019-11-17 21:25:25
  */
 @Mapper
 public interface CategoryBrandRelationDao extends BaseMapper<CategoryBrandRelationEntity> {
 
-    void updateCategory(@Param("catId")Long catId, @Param("name")String name);
+    void updateCategory(@Param("catId") Long catId, @Param("name") String name);
+
 }

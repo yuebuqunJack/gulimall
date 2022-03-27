@@ -5,7 +5,13 @@ import javax.validation.ConstraintValidatorContext;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ListValueConstraintValidator implements ConstraintValidator<ListValue, Integer> {
+/**
+ * @Description:
+ * @Created: with IntelliJ IDEA.
+ * @author: 夏沫止水
+ * @createTime: 2020-05-27 17:54
+ **/
+public class ListValueConstraintValidator implements ConstraintValidator<ListValue,Integer> {
 
     private Set<Integer> set = new HashSet<>();
 
@@ -15,22 +21,28 @@ public class ListValueConstraintValidator implements ConstraintValidator<ListVal
      */
     @Override
     public void initialize(ListValue constraintAnnotation) {
+
         int[] vals = constraintAnnotation.vals();
-        if (vals != null && vals.length != 0) {
-            for (int val : vals) {
-                set.add(val);
-            }
+
+        for (int val : vals) {
+            set.add(val);
         }
+
     }
 
     /**
-     * 校验逻辑
-     * @param value   需要校验的值
-     * @param context 上下文
+     * 判断是否效验成功
+     * @param value 需要效验的值
+     * @param context
      * @return
      */
     @Override
     public boolean isValid(Integer value, ConstraintValidatorContext context) {
-        return set.contains(value);// 如果set length==0，会返回false
+
+        //判断是否有包含的值
+        boolean contains = set.contains(value);
+
+        return contains;
     }
+
 }

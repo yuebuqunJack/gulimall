@@ -13,10 +13,6 @@ spring:
     url: jdbc:mysql://175.178.212.59:3306/gulimall_wms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  #  cloud:
-  #    nacos:
-  #      discovery:
-  #        server-addr: localhost:8848
 
   #    sentinel:
   #      transport:
@@ -27,13 +23,13 @@ spring:
   #    host: 192.168.77.130
   #    port: 6379
 
-  #开启feign对sentinel的支持
-  #feign:
-  #  sentinel:
-  #    enabled: true
+#  开启feign对sentinel的支持
+  feign:
+    sentinel:
+      enabled: true
 
-  #  jackson:
-  #    date-format: yyyy-MM-dd HH:mm:ss
+    jackson:
+      date-format: yyyy-MM-dd HH:mm:ss
   #
   #    #关闭thymeleaf缓存
   #  thymeleaf:
@@ -42,8 +38,8 @@ spring:
   #  session:
   #    store-type: redis
   #
-  #mybatis-plus:
-  #  mapper-locations: classpath:/mapper/**/*.xml
+  mybatis-plus:
+    mapper-locations: classpath:/mapper/**/*.xml
   #
   #  #设置实体类的自增主键
   global-config:
@@ -52,10 +48,22 @@ spring:
       #逻辑删除
       logic-delete-value: 1
       logic-not-delete-value: 0
+  cloud:
+    nacos:
+      config:
+        server-addr: localhost:8848
+#  jackson:  #可以将long型的id转json
+#    generator:
+#      write_numbers_as_strings: true
+
+#spring:
+#  jackson:
+#    generator:
+#      write_numbers_as_strings: true
 #
 #logging:
 #  level:
-#    com.xunqi.gulimall: error
+#    com.spower.gulimall: error
 #
 #
 ##暴露所有端点
@@ -64,3 +72,17 @@ spring:
 #    web:
 #      exposure:
 #        include: '*'
+
+mybatis-plus:
+  global-config:
+    #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
+    field-strategy: 0
+
+
+# 开启日志
+logging:
+  level:
+    com.spower.gulimall: debug
+    # feign调用日志，链路日志
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug

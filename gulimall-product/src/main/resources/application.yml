@@ -12,6 +12,8 @@ spring:
     password: root
     url: jdbc:mysql://175.178.212.59:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
+  resources:
+    static-locations: classpath:templates/,classpath:static/
 
   cloud:
     nacos:
@@ -44,9 +46,10 @@ spring:
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
 
-    #关闭thymeleaf缓存
+  #关闭thymeleaf缓存
   thymeleaf:
     cache: false
+#    prefix:
 
   session:
     store-type: redis

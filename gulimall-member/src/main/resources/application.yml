@@ -54,7 +54,7 @@ spring:
 #
 #logging:
 #  level:
-#    com.xunqi.gulimall: error
+#    com.spower.gulimall: error
 #
 #
 ##暴露所有端点

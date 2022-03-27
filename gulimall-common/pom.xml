@@ -31,37 +31,37 @@
             <artifactId>spring-cloud-starter-alibaba-nacos-config</artifactId>
         </dependency>
 
-<!--        &lt;!&ndash;feign&ndash;&gt;-->
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.cloud</groupId>-->
-<!--            <artifactId>spring-cloud-starter-openfeign</artifactId>-->
-<!--        </dependency>-->
-        <!--        &lt;!&ndash;seata 分布式事务 seata-all使用0.9【所以启动 事务协调者0.9版本的】&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>com.alibaba.cloud</groupId>-->
-        <!--            <artifactId>spring-cloud-starter-alibaba-seata</artifactId>-->
-        <!--            <exclusions>-->
-        <!--                <exclusion>-->
-        <!--                    <groupId>io.seata</groupId>-->
-        <!--                    <artifactId>seata-all</artifactId>-->
-        <!--                </exclusion>-->
-        <!--            </exclusions>-->
-        <!--        </dependency>-->
-        <!--        <dependency>-->
-        <!--            <groupId>io.seata</groupId>-->
-        <!--            <artifactId>seata-all</artifactId>-->
-        <!--            <version>0.9.0</version>-->
-        <!--        </dependency>-->
+        <!--feign-->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+                <!--seata 分布式事务 seata-all使用0.9【所以启动 事务协调者0.9版本的】-->
+<!--                <dependency>-->
+<!--                    <groupId>com.alibaba.cloud</groupId>-->
+<!--                    <artifactId>spring-cloud-starter-alibaba-seata</artifactId>-->
+<!--                    <exclusions>-->
+<!--                        <exclusion>-->
+<!--                            <groupId>io.seata</groupId>-->
+<!--                            <artifactId>seata-all</artifactId>-->
+<!--                        </exclusion>-->
+<!--                    </exclusions>-->
+<!--                </dependency>-->
+<!--                <dependency>-->
+<!--                    <groupId>io.seata</groupId>-->
+<!--                    <artifactId>seata-all</artifactId>-->
+<!--                    <version>0.9.0</version>-->
+<!--                </dependency>-->
         <!--sentinel：熔断、降级、限流-->
         <dependency>
             <groupId>com.alibaba.cloud</groupId>
             <artifactId>spring-cloud-starter-alibaba-sentinel</artifactId>
         </dependency>
-        <!--        &lt;!&ndash;sleuth链路追踪&ndash;&gt;-->
-        <!--        <dependency>-->
-        <!--            <groupId>org.springframework.cloud</groupId>-->
-        <!--            <artifactId>spring-cloud-starter-sleuth</artifactId>-->
-        <!--        </dependency>-->
+                <!--sleuth链路追踪-->
+                <dependency>
+                    <groupId>org.springframework.cloud</groupId>
+                    <artifactId>spring-cloud-starter-sleuth</artifactId>
+                </dependency>
         <!--zipkin链路追踪可视化，内部依赖了sleuth，所以无需再依赖sleuth-->
         <dependency>
             <groupId>org.springframework.cloud</groupId>

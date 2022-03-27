@@ -1,6 +1,5 @@
 package com.spower.common.valid;
 
-
 import javax.validation.Constraint;
 import javax.validation.Payload;
 import java.lang.annotation.Documented;
@@ -10,18 +9,25 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.*;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
-@Target({METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE})// 可以标注在哪些位置 方法、参数、构造器
-@Retention(RUNTIME)// 可以在什么时候获取到
-@Documented//
-@Constraint(validatedBy = {ListValueConstraintValidator.class})// 使用哪个校验器进行校验的（这里不指定，在初始化的时候指定）
+/**
+ * @Description: 自定义注解规则
+ * @Created: with IntelliJ IDEA.
+ * @author: 夏沫止水
+ * @createTime: 2020-05-27 17:48
+ **/
+
+@Documented
+@Constraint(validatedBy = { ListValueConstraintValidator.class })
+@Target({ METHOD, FIELD, ANNOTATION_TYPE, CONSTRUCTOR, PARAMETER, TYPE_USE })
+@Retention(RUNTIME)
 public @interface ListValue {
-    // 默认会找ValidationMessages.properties
-    String message() default "{com.atguigu.common.valid.ListValue.message}";
 
-    Class<?>[] groups() default {};
+    String message() default "{com.spower.common.valid.ListValue.message}";
 
-    Class<? extends Payload>[] payload() default {};
+    Class<?>[] groups() default { };
 
-    // 可以指定数据只能是vals数组指定的值
-    int[] vals() default {};
+    Class<? extends Payload>[] payload() default { };
+
+    int[] vals() default { };
+
 }

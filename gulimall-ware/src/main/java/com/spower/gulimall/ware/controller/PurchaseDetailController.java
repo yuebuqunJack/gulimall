@@ -1,28 +1,23 @@
 package com.spower.gulimall.ware.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.spower.gulimall.ware.entity.PurchaseDetailEntity;
-import com.spower.gulimall.ware.service.PurchaseDetailService;
 import com.spower.common.utils.PageUtils;
 import com.spower.common.utils.R;
+import com.spower.gulimall.ware.entity.PurchaseDetailEntity;
+import com.spower.gulimall.ware.service.PurchaseDetailService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 
 /**
  * 
  *
- * @author Jack.c
- * @email aa841264873@qq.com
- * @date 2022-03-17 20:38:16
+ * @author 夏沫止水
+ * @email HeJieLin@gulimall.com
+ * @date 2020-05-22 19:55:33
  */
 @RestController
 @RequestMapping("ware/purchasedetail")
@@ -59,6 +54,7 @@ public class PurchaseDetailController {
     @RequestMapping("/save")
     //@RequiresPermissions("ware:purchasedetail:save")
     public R save(@RequestBody PurchaseDetailEntity purchaseDetail){
+        purchaseDetail.setStatus(0);
 		purchaseDetailService.save(purchaseDetail);
 
         return R.ok();

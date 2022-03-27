@@ -1,34 +1,42 @@
 package com.spower.gulimall.ware.controller;
 
-import java.util.Arrays;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.spower.gulimall.ware.entity.WareInfoEntity;
-import com.spower.gulimall.ware.service.WareInfoService;
 import com.spower.common.utils.PageUtils;
 import com.spower.common.utils.R;
+import com.spower.gulimall.ware.entity.WareInfoEntity;
+import com.spower.gulimall.ware.service.WareInfoService;
+import com.spower.gulimall.ware.vo.FareVo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Arrays;
+import java.util.Map;
 
 
 
 /**
  * 仓库信息
  *
- * @author Jack.c
- * @email aa841264873@qq.com
- * @date 2022-03-17 20:38:16
+ * @author 夏沫止水
+ * @email HeJieLin@gulimall.com
+ * @date 2020-05-22 19:55:33
  */
 @RestController
 @RequestMapping("ware/wareinfo")
 public class WareInfoController {
     @Autowired
     private WareInfoService wareInfoService;
+
+    /**
+     * 获取运费信息
+     * @return
+     */
+    @GetMapping(value = "/fare")
+    public R getFare(@RequestParam("addrId") Long addrId) {
+
+        FareVo fare = wareInfoService.getFare(addrId);
+
+        return R.ok();
+    }
 
     /**
      * 列表
