@@ -50,6 +50,9 @@ spring:
   thymeleaf:
     cache: false
 #    prefix:
+  redis:
+    host: 175.178.212.59
+    port: 6379
 
   session:
     store-type: redis
