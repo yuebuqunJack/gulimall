@@ -52,13 +52,9 @@ spring:
         - id: gulimall_host_route                       #主机路由名称
           uri: lb://gulimall-product                    #负载均衡的服务
           predicates:
-            - Host= **.gulimall.com                     #断言就是外网地址
+            - Host= gulimall.com                        #断言就是外网地址
 
-#        - id: gulimall_product_route
-#          uri: lb://gulimall-search
-#          predicates:
-#            - Path=/**
-#        - id: gulimall_product_route
-#          uri: lb://gulimall-search
-#          predicates:
-#            - Host=search.spower.fun
+        - id: gulimall_search_route
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com

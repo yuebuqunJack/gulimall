@@ -398,7 +398,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
      */
 //    @Override
     public Map<String, List<Catelog2Vo>> getCatalogJsonFromDbWithLocalLock() {
-
 //        //map存储的任何东西都是在内存中的，下面这行代码称之为本地缓存（分布式环境不能用本地缓存，会导致数据一致性问题）
 //        Map<String, List<Catelog2Vo>> catalogJson = (Map<String, List<Catelog2Vo>>) cache.get("catalogJson");
 //        //如果缓存中有数据则用缓存的
@@ -453,7 +452,6 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity
 //        }
 //        //有缓存就将缓存返回
 //        return catalogJson;
-
         /**
          * 只要是同一把锁就能锁住需要这个锁的所有线程
          * 1.synchronized (this)，springboot所有组件在容器中都是单例的
