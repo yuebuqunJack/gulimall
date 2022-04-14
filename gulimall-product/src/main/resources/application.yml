@@ -20,8 +20,8 @@ spring:
       discovery:
         server-addr: localhost:8848
     alicloud:
-      access-key: LTAI5t95sFwNdrGuoy2FMJtR
-      secret-key: VhLu77rWpm74QefRuJn7mlxsVcDq8Z
+      access-key: --
+      secret-key: --
       oss:
         endpoint: oss-cn-shenzhen.aliyuncs.com
 
