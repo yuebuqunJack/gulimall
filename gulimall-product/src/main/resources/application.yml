@@ -2,7 +2,7 @@ server:
   port: 10001
   servlet:
     session:
-      timeout: 30m
+      timeout: 1000m
 
 spring:
   application:
@@ -26,22 +26,29 @@ spring:
         endpoint: oss-cn-shenzhen.aliyuncs.com
 
   #  alibaba.cloud.access-key=your-ak
-#  alibaba.cloud.secret-key=your-sk
-#  alibaba.cloud.oss.endpoint=***
+  #  alibaba.cloud.secret-key=your-sk
+  #  alibaba.cloud.oss.endpoint=***
 
   #    sentinel:
+  redis:
+    host: 175.178.212.59
+    port: 6379
+    timeout: 10000ms
 #      transport:
 #        #配置sentinel dashboard地址
 #        dashboard: localhost:8080
 
-#  redis:
-#    host: 192.168.77.130
-#    port: 6379
 
 #开启feign对sentinel的支持
 #feign:
 #  sentinel:
 #    enabled: true
+feign:
+  client:
+    config:
+      default: #这里就是指的所有被加载的默认FeignClient实现的服务配置都生效
+        connectTimeout: 1110000
+        readTimeout: 1110000
 
   jackson:
     date-format: yyyy-MM-dd HH:mm:ss
@@ -49,10 +56,11 @@ spring:
   #关闭thymeleaf缓存
   thymeleaf:
     cache: false
-#    prefix:
-  redis:
-    host: 175.178.212.59
-    port: 6379
+  #    prefix:
+  #  redis:
+  #    host: 175.178.212.59
+  #    port: 6379
+  #    timeout: 10000ms
 
   session:
     store-type: redis

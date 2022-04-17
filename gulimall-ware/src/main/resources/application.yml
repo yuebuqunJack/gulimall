@@ -24,9 +24,9 @@ spring:
   #    port: 6379
 
 #  开启feign对sentinel的支持
-  feign:
-    sentinel:
-      enabled: true
+#  feign:
+#    sentinel:
+#      enabled: true
 
     jackson:
       date-format: yyyy-MM-dd HH:mm:ss
@@ -83,6 +83,6 @@ mybatis-plus:
 logging:
   level:
     com.spower.gulimall: debug
-    # feign调用日志，链路日志
-    org.springframework.cloud.openfeign: debug
-    org.springframework.cloud.sleuth: debug
+#    # feign调用日志，链路日志
+#    org.springframework.cloud.openfeign: debug
+#    org.springframework.cloud.sleuth: debug

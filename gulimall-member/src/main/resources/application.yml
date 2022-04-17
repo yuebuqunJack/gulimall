@@ -16,35 +16,43 @@ spring:
     password: root
     url: jdbc:mysql://175.178.212.59:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
+feign:
+  client:
+    config:
+      default:
+        #建立连接所用的时间，适用于网络状况正常的情况下，两端连接所需要的时间
+        ConnectTimeOut: 5000
+        #指建立连接后从服务端读取到可用资源所用的时间
+        ReadTimeOut: 5000
 
-#    sentinel:
-#      transport:
-#        #配置sentinel dashboard地址
-#        dashboard: localhost:8080
+  #    sentinel:
+  #      transport:
+  #        #配置sentinel dashboard地址
+  #        dashboard: localhost:8080
 
-#  redis:
-#    host: 192.168.77.130
-#    port: 6379
+  #  redis:
+  #    host: 192.168.77.130
+  #    port: 6379
 
-#开启feign对sentinel的支持
-#feign:
-#  sentinel:
-#    enabled: true
+  #开启feign对sentinel的支持
+  #feign:
+  #  sentinel:
+  #    enabled: true
 
-#  jackson:
-#    date-format: yyyy-MM-dd HH:mm:ss
-#
-#    #关闭thymeleaf缓存
-#  thymeleaf:
-#    cache: false
-#
-#  session:
-#    store-type: redis
-#
-#mybatis-plus:
-#  mapper-locations: classpath:/mapper/**/*.xml
-#
-#  #设置实体类的自增主键
+  #  jackson:
+  #    date-format: yyyy-MM-dd HH:mm:ss
+  #
+  #    #关闭thymeleaf缓存
+  #  thymeleaf:
+  #    cache: false
+  #
+  #  session:
+  #    store-type: redis
+  #
+  #mybatis-plus:
+  #  mapper-locations: classpath:/mapper/**/*.xml
+  #
+  #  #设置实体类的自增主键
   global-config:
     db-config:
       id-type: auto

@@ -6,11 +6,14 @@ import lombok.ToString;
 import java.io.Serializable;
 import java.util.Date;
 
+/**
+ * @author CZQ
+ */
 @ToString
 @Data
 public class MemberResponseVO implements Serializable {
 
-    private static final long serialVersionUID = 5573669251256409786L;
+//    private static final long serialVersionUID = 5573669251256409786L;
 
     private Long id;
     /**

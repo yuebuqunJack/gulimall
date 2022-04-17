@@ -1,15 +1,9 @@
-/**
- * Copyright (c) 2016-2019 人人开源 All rights reserved.
- * <p>
- * https://www.renren.io
- * <p>
- * 版权所有，侵权必究！
- */
-
 package com.spower.common.utils;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import com.spower.common.constant.DateConstant;
+import com.spower.common.exception.BizCodeEnume;
 import org.apache.http.HttpStatus;
 
 import java.util.HashMap;
@@ -23,23 +17,37 @@ import java.util.Map;
 public class R extends HashMap<String, Object> {
     private static final long serialVersionUID = 1L;
 
-    //利用fastjson进行反序列化
-    public <T> T getData(TypeReference<T> typeReference) {
-		//默认是map
-        Object data = get("data");
-        String s = JSON.toJSONString(data);
-        T t = JSON.parseObject(s, typeReference);
-        return t;
-    }
-
-    public R setData(Object data) {
-        put("data", data);
-        return this;
-    }
-
     public R() {
         put("code", 0);
         put("msg", "success");
+    }
+
+    /**
+     * 封装数据
+     */
+    public R setData(Object data) {
+        return put("data", data);
+    }
+
+    /**
+     * 解析数据
+     * 1.@ResponseBody返回类型被封装成了Json格式
+     * 2.feign接收参数时也会封装成json格式，data对象也被解析成json格式的数据（[集合对象]或{map对象}）
+     * 3.将data转成json字符串格式，然后再解析成对象
+     */
+    public <T> T getData(TypeReference<T> type) {
+        Object data = get("data");
+        String jsonString = JSONObject.toJSONStringWithDateFormat(data, DateConstant.DATE_FORMAT);
+        return JSONObject.parseObject(jsonString, type);
+    }
+
+    /**
+     * 解析数据
+     */
+    public <T> T getData(String key, TypeReference<T> type) {
+        Object data = get(key);
+        String jsonString = JSONObject.toJSONStringWithDateFormat(data, DateConstant.DATE_FORMAT);
+        return JSONObject.parseObject(jsonString, type);
     }
 
     public static R error() {
@@ -55,6 +63,10 @@ public class R extends HashMap<String, Object> {
         r.put("code", code);
         r.put("msg", msg);
         return r;
+    }
+
+    public static R error(BizCodeEnume bizCode) {
+        return error(bizCode.getCode(), bizCode.getMsg());
     }
 
     public static R ok(String msg) {
@@ -79,8 +91,7 @@ public class R extends HashMap<String, Object> {
     }
 
     public Integer getCode() {
-
         return (Integer) this.get("code");
     }
-
 }
+

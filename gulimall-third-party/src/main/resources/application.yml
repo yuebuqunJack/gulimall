@@ -20,12 +20,17 @@ spring:
       oss:
         endpoint: oss-cn-shenzhen.aliyuncs.com
         bucket: spower-gulimall
-#      sms:
-#        host: https://fesms.market.alicloudapi.com
-#        path: /sms/
-#        appcode: 213409bfb6f64fcd9478fda69f2251b1
-#        sign: 1
-#        skin: 1
+
+#腾讯云短信服务
+tencentsms:
+  secretId: AKID86pIWVEixxiDSVJsBE2atwkJcfT3OTJu # SecretId、SecretKey 查询: https://console.cloud.tencent.com/cam/capi
+  secretKey: NWP3RZS5TbT5SZR3QYQ2OULwJRJwKTO4
+  endPoint: sms.tencentcloudapi.com # 指定接入地域域名，默认就近地域接入域名为 sms.tencentcloudapi.com ，也支持指定地域域名访问，例如广州地域的域名为 sms.ap-guangzhou.tencentcloudapi.com
+  sdkAppId: 1400660215 #短信应用ID: 短信SdkAppId在 [短信控制台] 添加应用后生成的实际SdkAppId，示例如1400006666
+  signName: 旦早朝晨 #签名信息可前往 [国内短信](https://console.cloud.tencent.com/smsv2/csms-sign) 或 [国际/港澳台短信](https://console.cloud.tencent.com/smsv2/isms-sign) 的签名管理查看
+  templateId: 1360586 # 模板 ID 可前往 [国内短信](https://console.cloud.tencent.com/smsv2/csms-template) 或 [国际/港澳台短信](https://console.cloud.tencent.com/smsv2/isms-template) 的正文模板管理查看
+  #phoneNumberSet: +8618290013344 # 示例如：+8613711112222， 其中前面有一个+号 ，86为国家码，13711112222为手机号，最多不要超过200个手机号
+
 #  zipkin:
 #    # zipkin服务器的地址
 #    base-url: http://192.168.56.10:9411/
@@ -51,6 +56,7 @@ spring:
 #    web:
 #      exposure:
 #        exclude: '*'
+
 
 # 开启日志
 logging:

@@ -4,6 +4,8 @@ import com.spower.gulimall.product.vo.AttrGroupWithAttrsVo;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.spower.common.utils.PageUtils;
 import com.spower.gulimall.product.entity.AttrGroupEntity;
+import com.spower.gulimall.product.vo.SkuItemVo;
+import com.spower.gulimall.product.vo.SpuItemAttrGroupVo;
 
 import java.util.List;
 import java.util.Map;
@@ -24,5 +26,6 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
 
     List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId);
 
+    List <SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId);
 }
 

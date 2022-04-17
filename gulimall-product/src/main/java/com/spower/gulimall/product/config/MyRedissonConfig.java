@@ -29,6 +29,8 @@ public class MyRedissonConfig {
 //        config.useSingleServer().setAddress("redis://" + host + ":" + port);// 单节点模式
 //        config.useSingleServer().setAddress("rediss://" + host + ":" + port);// 使用安全连接
 //        config.useClusterServers().addNodeAddress("127.0.0.1:7004", "127.0.0.1:7001");// 集群模式
+        //调小ilde连接数
+        config.useSingleServer().setConnectionMinimumIdleSize(3);
         // 2.创建redisson客户端实例
         RedissonClient redissonClient = Redisson.create(config);
         return redissonClient;

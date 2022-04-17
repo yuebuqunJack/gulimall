@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 
 /**
  * 商城检索
- * @Author: wanzenghui
- * @Date: 2021/11/10 23:51
+ * @Author: jackc
+ * @Date: 2022/04/03 23:51
  */
 @Controller
 public class ElasticSearchController {
@@ -25,7 +25,9 @@ public class ElasticSearchController {
     public String listPage(SearchParam param, Model model, HttpServletRequest request) {
 
         param.set_queryString(request.getQueryString());
+        //根据页面传递过来的查询参数去ES中检索商品
         SearchResult result = mallSearchService.search(param);
+        //检索的结果返回到前端渲染
         model.addAttribute("result", result);
         return "list";
     }

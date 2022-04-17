@@ -3,6 +3,9 @@ package com.spower.gulimall.product.vo;
 
 import lombok.Data;
 
+/**
+ * @author CZQ
+ */
 @Data
 public class AttrVo {
     /**

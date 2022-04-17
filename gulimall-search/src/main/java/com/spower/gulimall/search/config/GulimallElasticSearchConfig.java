@@ -3,13 +3,13 @@ package com.spower.gulimall.search.config;
 import org.apache.http.HttpHost;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-hight.html
+ * https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/java-rest-hight.html 文档
+ * @author CZQ
  */
 @Configuration
 public class GulimallElasticSearchConfig {

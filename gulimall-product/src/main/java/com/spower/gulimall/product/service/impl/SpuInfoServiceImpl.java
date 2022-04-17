@@ -32,7 +32,9 @@ import com.spower.gulimall.product.dao.SpuInfoDao;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-
+/**
+ * @author CZQ
+ */
 @Service("spuInfoService")
 public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> implements SpuInfoService {
 
@@ -133,6 +135,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         BeanUtils.copyProperties(bounds, spuBoundTo);
         spuBoundTo.setSpuId(infoEntity.getId());
         R r = couponFeignService.saveSpuBounds(spuBoundTo);
+        System.out.println("r.getCode()r.getCode()r.getCode():" + r.getCode());
         if (r.getCode() != 0) {
             log.error("远程保存spu积分信息失败");
         }
@@ -196,6 +199,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
                 skuReductionTo.setSkuId(skuId);
                 if (skuReductionTo.getFullCount() > 0 || skuReductionTo.getFullPrice().compareTo(new BigDecimal("0")) == 1) {
                     R r1 = couponFeignService.saveSkuReduction(skuReductionTo);
+                    System.out.println(r1.getCode());
                     if (r1.getCode() != 0) {
                         log.error("远程保存sku优惠信息失败");
                     }
@@ -274,7 +278,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return attr.getAttrId();
         }).collect(Collectors.toList());
 
-        // 查询允许被检索的基本属性集合ID
+        // 查询允许被检索的基本属性集合ID(在指定的所有属性集合里面，挑出检索属性) SELECT attr_id FROM `pms_attr` WHERE attr_id IN(?) AND search_type = 1
         List<Long> searchAttrIds = attrService.selectSearchAttrIds(attrIds);
 
         Set<Long> idSet = new HashSet<>(searchAttrIds);
@@ -332,6 +336,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             esModel.setAttrs(attrsList);
             return esModel;
         }).collect(Collectors.toList());
+
         //TODO 5.查将数据发送给ES进行保存：gulimall-search
         R r = searchFeignService.productStatusUp(upProducts);
         if (r.getCode() == 0) {

@@ -1,12 +1,18 @@
 package com.spower.gulimall.search.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import com.spower.common.constant.search.EsConstant;
 import com.spower.common.to.es.SkuEsModel;
+import com.spower.common.utils.R;
+import com.spower.common.vo.search.AttrResponseVo;
 import com.spower.common.vo.search.SearchParam;
 import com.spower.common.vo.search.SearchResult;
 import com.spower.gulimall.search.config.GulimallElasticSearchConfig;
+import com.spower.gulimall.search.feign.ProductFeignService;
 import com.spower.gulimall.search.service.MallSearchService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.search.join.ScoreMode;
@@ -16,6 +22,7 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.NestedQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.RangeQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
@@ -28,13 +35,17 @@ import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.yaml.snakeyaml.util.UriEncoder;
 
+import javax.annotation.Resource;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -44,30 +55,34 @@ import java.util.stream.Collectors;
 /**
  * 商城检索
  *
- * @Author: wanzenghui
- * @Date: 2021/11/10 23:51
+ * @Author: jackc
+ * @Date: 2022/04/03 23:51
  */
+@Slf4j
 @Service
 public class MallSearchServiceImpl implements MallSearchService {
 
     @Autowired
-    RestHighLevelClient client;
+    private RestHighLevelClient esRestClient;
 
-    /**
-     * 检索商品
-     */
+    @Resource
+    private ProductFeignService productFeignService;
+
     @Override
     public SearchResult search(SearchParam param) {
-        // 1.准备检索请求，动态构建DSL语句
+
+        //1、动态构建出查询需要的DSL语句
+        SearchResult result = null;
+
+        //1、准备检索请求
         SearchRequest searchRequest = buildSearchRequest(param);
 
-        SearchResult result = null;// 结果
         try {
-            // 2.执行检索请求
-            SearchResponse response = client.search(searchRequest, GulimallElasticSearchConfig.COMMON_OPTIONS);
+            //2、执行检索请求
+            SearchResponse response = esRestClient.search(searchRequest, GulimallElasticSearchConfig.COMMON_OPTIONS);
 
-            // 3.分析相应数据封装result返回
-            result = buildSearchResuult(response, param);
+            //3、分析响应数据，封装成我们需要的格式
+            result = buildSearchResult(response, param);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,299 +91,317 @@ public class MallSearchServiceImpl implements MallSearchService {
     }
 
     /**
-     * 动态构建检索请求
-     * 模糊匹配，过滤（按照属性，分类，品牌，价格区间，库存），排序，分页，高亮 ,聚合分析【分析所有可选的规格、分类、品牌】
+     * 构建结果数据
+     * 模糊匹配，过滤（按照属性、分类、品牌，价格区间，库存），完成排序、分页、高亮,聚合分析功能
+     *
+     * @param response
+     * @return
      */
-    private SearchRequest buildSearchRequest(SearchParam param) {
-        // 构建SourceBuilder【通过builder构建DSL语句】
-        SearchSourceBuilder builder = new SearchSourceBuilder();
+    private SearchResult buildSearchResult(SearchResponse response, SearchParam param) {
 
-        // 动态构建查询DSL语句【参照dsl.json分析包装步骤】
-        // 查询：模糊匹配，过滤（按照属性，分类，品牌，价格区间，库存）
-        // 1.构建bool
-        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        // 1.1.构建must（模糊查询）
-        if (StringUtils.isNotBlank(param.getKeyword())) {
-            boolQueryBuilder.must(QueryBuilders.matchQuery("skuTitle", param.getKeyword()));
-        }
-        // 1.2.构建filter（过滤）
-        // 1.2.1.三级分类
-        if (param.getCatalog3Id() != null) {
-            boolQueryBuilder.filter(QueryBuilders.termQuery("catalogId", param.getCatalog3Id()));
-        }
-        // 1.2.2.品牌id
-        if (!CollectionUtils.isEmpty(param.getBrandId())) {
-            boolQueryBuilder.filter(QueryBuilders.termsQuery("brandId", param.getBrandId()));
-        }
-        // 1.2.3.属性
-        if (!CollectionUtils.isEmpty(param.getAttrs())) {
-            for (String attr : param.getAttrs()) {
-                // attrs=1_白色:蓝色
-                String[] attrs = attr.split("_");
-                String attrId = attrs[0];// 1
-                String[] attrValues = attrs[1].split(":");// ["白色","蓝色"]
-                BoolQueryBuilder nestedBoolQueryBuilder = QueryBuilders.boolQuery()
-                        .must(QueryBuilders.termQuery("attrs.attrId", attrId))
-                        .must(QueryBuilders.termsQuery("attrs.attrValue", attrValues));
-                // 遍历每一个属性生成一个NestedQuery
-                NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("attrs", nestedBoolQueryBuilder, ScoreMode.None);// ScoreMode.None：不参与评分
-                boolQueryBuilder.filter(nestedQueryBuilder);
-            }
-        }
-
-        // 1.2.4.库存
-        if (param.getHasStock() != null) {
-            boolQueryBuilder.filter(QueryBuilders.termQuery("hasStock", param.getHasStock() == 1));
-        }
-
-        // 1.2.5.价格区间【多种区间传参方式：1_500/_500/500_】
-        if (StringUtils.isNotBlank(param.getSkuPrice())) {
-            String[] prices = param.getSkuPrice().split("_");
-            if (prices.length == 2) {
-                // 1_500
-                boolQueryBuilder.filter(QueryBuilders.rangeQuery("skuPrice").gte(prices[0]).lte(prices[1]));
-            } else if (prices.length == 1) {
-                if (param.getSkuPrice().startsWith("_")) {
-                    // _500
-                    boolQueryBuilder.filter(QueryBuilders.rangeQuery("skuPrice").lte(prices[0]));
-                } else if (param.getSkuPrice().endsWith("_")) {
-                    // 500_
-                    boolQueryBuilder.filter(QueryBuilders.rangeQuery("skuPrice").gte(prices[0]));
-                }
-            }
-        }
-
-        // 1.3.封装bool【bool封装了模糊查询+过滤】
-        builder.query(boolQueryBuilder);
-
-        // 1.4.排序，分页，高亮
-        // 1.4.1.排序
-        if (StringUtils.isNotBlank(param.getSort())) {
-            String[] sorts = param.getSort().split("_");
-            builder.sort(sorts[0], sorts[1].toLowerCase().equals(SortOrder.ASC.toString()) ? SortOrder.ASC : SortOrder.DESC);
-        }
-        // 1.4.2.分页
-        builder.from(EsConstant.PRODUCT_PAGESIZE * (param.getPageNum() - 1));
-        builder.size(EsConstant.PRODUCT_PAGESIZE);
-        // 1.4.3.高亮
-        if (StringUtils.isNotBlank(param.getKeyword())) {
-            // 模糊匹配才需要高亮
-            HighlightBuilder highlightBuilder = new HighlightBuilder();
-            highlightBuilder.field("skuTitle").preTags("<b style='color:red'>").postTags("</b>");
-            builder.highlighter(highlightBuilder);
-        }
-
-        // 1.5.聚合分析【分析所有可选的规格、分类、品牌】
-        // 1.5.1.品牌聚合
-        TermsAggregationBuilder brandAgg = AggregationBuilders.terms("brand_agg").field("brandId").size(50);
-        // 品牌聚合子聚合
-        brandAgg.subAggregation(AggregationBuilders.terms("brand_name_agg").field("brandName").size(1));
-        brandAgg.subAggregation(AggregationBuilders.terms("brand_img_agg").field("brandImg").size(1));
-        builder.aggregation(brandAgg);
-
-        // 1.5.2.分类聚合
-        TermsAggregationBuilder catalogAgg = AggregationBuilders.terms("catalog_agg").field("catalogId").size(20);
-        catalogAgg.subAggregation(AggregationBuilders.terms("catalog_name_agg").field("catalogName").size(1));
-        builder.aggregation(catalogAgg);
-
-        // 1.5.3.属性嵌套聚合
-        NestedAggregationBuilder attrNestedAgg = AggregationBuilders.nested("attr_agg", "attrs");
-        // 属性子聚合
-        TermsAggregationBuilder attrIdAgg = AggregationBuilders.terms("attr_id_agg").field("attrs.attrId").size(50);
-        attrNestedAgg.subAggregation(attrIdAgg);
-        attrIdAgg.subAggregation(AggregationBuilders.terms("attr_name_agg").field("attrs.attrName").size(1));
-        attrIdAgg.subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(50));
-        builder.aggregation(attrNestedAgg);
-
-        System.out.println("构建的DSL语句: " + builder.toString());
-        // 根据构建了DSL语句的builder创建检索请求对象
-        SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, builder);
-        return searchRequest;
-    }
-
-    /**
-     * 封装检索结果
-     * 1、返回所有查询到的商品
-     * 2、分页信息
-     * 3、当前所有商品涉及到的所有属性信息
-     * 4、当前所有商品涉及到的所有品牌信息
-     * 5、当前所有商品涉及到的所有分类信息
-     */
-    private SearchResult buildSearchResuult(SearchResponse response, SearchParam param) {
         SearchResult result = new SearchResult();
-        // ==========从命中结果获取===========hits
-        SearchHits hits = response.getHits();// 获取命中结果
-        // 1.返回所有查询到的商品
-        List<SkuEsModel> products = new ArrayList<>();
-        if (!ArrayUtils.isEmpty(hits.getHits())) {
+
+        //1、返回的所有查询到的商品
+        SearchHits hits = response.getHits();
+
+        List<SkuEsModel> esModels = new ArrayList<>();
+        //遍历所有商品信息
+        if (hits.getHits() != null && hits.getHits().length > 0) {
             for (SearchHit hit : hits.getHits()) {
-                String jsonString = hit.getSourceAsString();// 获取jsonString
-                SkuEsModel esModel = JSONObject.parseObject(jsonString, SkuEsModel.class);
-                if (StringUtils.isNotBlank(param.getKeyword())) {
-                    // 关键字不为空，返回结果包含高亮信息
-                    // 高亮信息
-                    String skuTitle = hit.getHighlightFields().get("skuTitle").fragments()[0].string();
-                    esModel.setSkuTitle(skuTitle);
+                String sourceAsString = hit.getSourceAsString();
+                SkuEsModel esModel = JSON.parseObject(sourceAsString, SkuEsModel.class);
+
+                //判断是否按关键字检索，若是就显示高亮，否则不显示
+                if (!StringUtils.isEmpty(param.getKeyword())) {
+                    //拿到高亮信息显示标题
+                    HighlightField skuTitle = hit.getHighlightFields().get("skuTitle");
+                    String skuTitleValue = skuTitle.getFragments()[0].string();
+                    esModel.setSkuTitle(skuTitleValue);
                 }
-                products.add(esModel);
+                esModels.add(esModel);
             }
         }
-        result.setProducts(products);
-        // 2.分页信息
+        result.setProducts(esModels);
+
+        //2、当前商品涉及到的所有属性信息
+        List<SearchResult.AttrVo> attrVos = new ArrayList<>();
+        //获取属性信息的聚合
+        ParsedNested attrsAgg = response.getAggregations().get("attr_agg");
+        ParsedLongTerms attrIdAgg = attrsAgg.getAggregations().get("attr_id_agg");
+        for (Terms.Bucket bucket : attrIdAgg.getBuckets()) {
+            SearchResult.AttrVo attrVo = new SearchResult.AttrVo();
+            //1、得到属性的id
+            long attrId = bucket.getKeyAsNumber().longValue();
+            attrVo.setAttrId(attrId);
+
+            //2、得到属性的名字
+            ParsedStringTerms attrNameAgg = bucket.getAggregations().get("attr_name_agg");
+            String attrName = attrNameAgg.getBuckets().get(0).getKeyAsString();
+            attrVo.setAttrName(attrName);
+
+            //3、得到属性的所有值
+            ParsedStringTerms attrValueAgg = bucket.getAggregations().get("attr_value_agg");
+            List<String> attrValues = attrValueAgg.getBuckets().stream().map(item -> item.getKeyAsString()).collect(Collectors.toList());
+            attrVo.setAttrValue(attrValues);
+
+            attrVos.add(attrVo);
+        }
+
+        result.setAttrs(attrVos);
+
+        //3、当前商品涉及到的所有品牌信息
+        List<SearchResult.BrandVo> brandVos = new ArrayList<>();
+        //获取到品牌的聚合
+        ParsedLongTerms brandAgg = response.getAggregations().get("brand_agg");
+        for (Terms.Bucket bucket : brandAgg.getBuckets()) {
+            SearchResult.BrandVo brandVo = new SearchResult.BrandVo();
+
+            //1、得到品牌的id
+            long brandId = bucket.getKeyAsNumber().longValue();
+            brandVo.setBrandId(brandId);
+
+            //2、得到品牌的名字
+            ParsedStringTerms brandNameAgg = bucket.getAggregations().get("brand_name_agg");
+            String brandName = brandNameAgg.getBuckets().get(0).getKeyAsString();
+            brandVo.setBrandName(brandName);
+
+            //3、得到品牌的图片
+            ParsedStringTerms brandImgAgg = bucket.getAggregations().get("brand_img_agg");
+            String brandImg = brandImgAgg.getBuckets().get(0).getKeyAsString();
+            brandVo.setBrandImg(brandImg);
+
+            brandVos.add(brandVo);
+        }
+        result.setBrands(brandVos);
+
+        //4、当前商品涉及到的所有分类信息
+        //获取到分类的聚合
+        List<SearchResult.CatalogVo> catalogVos = new ArrayList<>();
+        ParsedLongTerms catalogAgg = response.getAggregations().get("catalog_agg");
+        for (Terms.Bucket bucket : catalogAgg.getBuckets()) {
+            SearchResult.CatalogVo catalogVo = new SearchResult.CatalogVo();
+            //得到分类id
+            String keyAsString = bucket.getKeyAsString();
+            catalogVo.setCatalogId(Long.parseLong(keyAsString));
+
+            //得到分类名
+            ParsedStringTerms catalogNameAgg = bucket.getAggregations().get("catalog_name_agg");
+            String catalogName = catalogNameAgg.getBuckets().get(0).getKeyAsString();
+            catalogVo.setCatalogName(catalogName);
+            catalogVos.add(catalogVo);
+        }
+
+        result.setCatalogs(catalogVos);
+        //===============以上可以从聚合信息中获取====================//
+        //5、分页信息-页码
+        result.setPageNum(param.getPageNum());
+        //5、1分页信息、总记录数
         long total = hits.getTotalHits().value;
-        long totalPages = total % EsConstant.PRODUCT_PAGESIZE == 0 ? total / EsConstant.PRODUCT_PAGESIZE : total / EsConstant.PRODUCT_PAGESIZE + 1;
-        result.setPageNum(param.getPageNum());// 当前页码
-        result.setTotal(total);// 总记录数
-        result.setTotalPages((int) totalPages);// 总页码
-        // 导航页码
+        result.setTotal(total);
+
+        //5、2分页信息-总页码-计算
+        int totalPages = (int) total % EsConstant.PRODUCT_PAGESIZE == 0 ?
+                (int) total / EsConstant.PRODUCT_PAGESIZE : ((int) total / EsConstant.PRODUCT_PAGESIZE + 1);
+        result.setTotalPages(totalPages);
+
         List<Integer> pageNavs = new ArrayList<>();
         for (int i = 1; i <= totalPages; i++) {
             pageNavs.add(i);
         }
         result.setPageNavs(pageNavs);
 
-        // ==========从聚合结果获取===========aggregations
-        Aggregations aggregations = response.getAggregations();// 获取聚合结果
-        // 3.当前所有商品涉及到的所有属性信息
-        ArrayList<SearchResult.AttrVo> attrs = new ArrayList<>();
-        ParsedNested attrAgg = aggregations.get("attr_agg");
-        ParsedLongTerms attrIdAgg = attrAgg.getAggregations().get("attr_id_agg");
-        Map<Long, String> attrMap = new HashMap<>();// 面包屑map数据源【属性名】
-        for (Terms.Bucket bucket : attrIdAgg.getBuckets()) {
-            // 封装属性ID
-            SearchResult.AttrVo attr = new SearchResult.AttrVo();
-            attr.setAttrId(bucket.getKeyAsNumber().longValue());
-            // 封装属性名
-            ParsedStringTerms attrNameAgg = bucket.getAggregations().get("attr_name_agg");
-            attr.setAttrName(attrNameAgg.getBuckets().get(0).getKeyAsString());
-            // 封装属性值
-            ParsedStringTerms attrValueAgg = bucket.getAggregations().get("attr_value_agg");
-            List<String> attrValue = attrValueAgg.getBuckets().stream()
-                    .map(valueBucket -> valueBucket.getKeyAsString())
-                    .collect(Collectors.toList());
-            attr.setAttrValue(attrValue);
-            attrs.add(attr);
-            // 构建面包屑数据源
-            if (!CollectionUtils.isEmpty(param.getAttrs()) && !attrMap.containsKey(attr.getAttrId())) {
-                attrMap.put(attr.getAttrId(), attr.getAttrName());
-            }
-        }
-        result.setAttrs(attrs);
 
-        // 4.当前所有商品涉及到的所有品牌信息
-        List<SearchResult.BrandVo> brands = new ArrayList<>();
-        ParsedLongTerms brandAgg = aggregations.get("brand_agg");
-        Map<Long, String> brandMap = new HashMap<>();// 面包屑map数据源【品牌】
-        for (Terms.Bucket bucket : brandAgg.getBuckets()) {
-            // 封装品牌ID
-            SearchResult.BrandVo brand = new SearchResult.BrandVo();
-            brand.setBrandId(bucket.getKeyAsNumber().longValue());
-            // 封装品牌名
-            ParsedStringTerms brandNameAgg = bucket.getAggregations().get("brand_name_agg");
-            brand.setBrandName(brandNameAgg.getBuckets().get(0).getKeyAsString());
-            // 封装品牌图片
-            ParsedStringTerms brandImgAgg = bucket.getAggregations().get("brand_img_agg");
-            brand.setBrandImg(brandImgAgg.getBuckets().get(0).getKeyAsString());
-            brands.add(brand);
-            // 构建面包屑数据源
-            if (!CollectionUtils.isEmpty(param.getBrandId()) ) {
-                brandMap.put(brand.getBrandId(), brand.getBrandName());
-            }
-        }
-        result.setBrands(brands);
+        //6、构建面包屑导航
+        if (param.getAttrs() != null && param.getAttrs().size() > 0) {
+            List<SearchResult.NavVo> collect = param.getAttrs().stream().map(attr -> {
+                //1、分析每一个attrs传过来的参数值
+                SearchResult.NavVo navVo = new SearchResult.NavVo();
+                String[] s = attr.split("_");
+                navVo.setNavValue(s[1]);
+                R r = productFeignService.attrInfo(Long.parseLong(s[0]));
+                if (r.getCode() == 0) {
+                    AttrResponseVo data = r.getData("attr", new TypeReference<AttrResponseVo>() {
+                    });
+                    navVo.setNavName(data.getAttrName());
+                } else {
+                    navVo.setNavName(s[0]);
+                }
 
-        // 5.当前所有商品涉及到的所有分类信息
-        List<SearchResult.CatalogVo> catalogs = new ArrayList<>();
-        ParsedLongTerms catalogAgg = aggregations.get("catalog_agg");
-        String catalogName = null;// 面包屑map数据源【分类】
-        for (Terms.Bucket bucket : catalogAgg.getBuckets()) {
-            // 封装分类ID
-            SearchResult.CatalogVo catalog = new SearchResult.CatalogVo();
-            catalog.setCatalogId(bucket.getKeyAsNumber().longValue());
-            // 封装分类名
-            ParsedStringTerms catalogNameAgg = bucket.getAggregations().get("catalog_name_agg");// 子聚合
-            catalog.setCatalogName(catalogNameAgg.getBuckets().get(0).getKeyAsString());
-            catalogs.add(catalog);
-            // 构建面包屑数据源
-            if (catalog.getCatalogId().equals(param.getCatalog3Id())) {
-                catalogName = catalog.getCatalogName();
-            }
-        }
-        result.setCatalogs(catalogs);
+                //2、取消了这个面包屑以后，我们要跳转到哪个地方，将请求的地址url里面的当前置空
+                //拿到所有的查询条件，去掉当前
+                String encode = null;
+                try {
+                    encode = URLEncoder.encode(attr, "UTF-8");
+                    encode.replace("+", "%20");  //浏览器对空格的编码和Java不一样，差异化处理
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                String replace = param.get_queryString().replace("&attrs=" + attr, "");
+                navVo.setLink("http://search.gulimall.com/list.html?" + replace);
 
-        // 6.构建面包屑导航数据_属性
-        if (!CollectionUtils.isEmpty(param.getAttrs())) {
-            // 属性非空才需要面包屑功能
-            List<SearchResult.NavVo> navs = param.getAttrs().stream().map(attr -> {
-                // attr：15_海思
-                SearchResult.NavVo nav = new SearchResult.NavVo();
-                String[] arr = attr.split("_");
-                // 封装筛选属性ID集合【给前端判断哪些属性是筛选条件，从而隐藏显示属性栏，显示在面包屑中】
-                result.getAttrIds().add(Long.parseLong(arr[0]));
-                // 面包屑名字：属性名
-                nav.setNavName(attrMap.get(Long.parseLong(arr[0])));
-                // 面包屑值：属性值
-                nav.setNavValue(arr[1]);
-                // 设置跳转地址（将属性条件置空）【当取消面包屑上的条件时，跳转地址】
-                String replace = replaceQueryString(param, "attrs", attr);
-                nav.setLink("http://search.gulimall.com/list.html?" + replace);// 每一个属性都有自己对应的回退地址
-
-                return nav;
+                return navVo;
             }).collect(Collectors.toList());
-            result.setNavs(navs);
-        }
 
-        // 7.构建面包屑导航数据_品牌
-        if (!CollectionUtils.isEmpty(param.getBrandId())) {
-            List<SearchResult.NavVo> navs = result.getNavs();
-            // 多个品牌ID封装成一级面包屑，所以这里只需要一个NavVo
-            SearchResult.NavVo nav = new SearchResult.NavVo();
-            // 面包屑名称直接使用品牌
-            nav.setNavName("品牌");
-            StringBuffer buffer = new StringBuffer();
-            String replace = "";
-            for (Long brandId : param.getBrandId()) {
-                // 多个brandId筛选条件汇总为一级面包屑，所以navValue拼接所有品牌名
-                buffer.append(brandMap.get(brandId)).append(";");
-                // 因为多个brandId汇总为一级面包屑，所以每一个brandId筛选条件都要删除
-                replace = replaceQueryString(param, "brandId", brandId.toString());
-            }
-            nav.setNavValue(buffer.toString());// 品牌拼接值
-            nav.setLink("http://search.gulimall.com/list.html?" + replace);// 回退品牌面包屑等于删除所有品牌条件
-            navs.add(nav);
-        }
-
-        // 构建面包屑导航数据_分类
-        if (param.getCatalog3Id() != null) {
-            List<SearchResult.NavVo> navs = result.getNavs();
-            SearchResult.NavVo nav = new SearchResult.NavVo();
-            nav.setNavName("分类");
-            nav.setNavValue(catalogName);// 分类名
-            StringBuffer buffer = new StringBuffer();
-//            String replace = replaceQueryString(param, "catalog3Id", param.getCatalog3Id().toString());
-//            nav.setLink("http://search.gulimall.com/list.html?" + replace);
-            navs.add(nav);
+            result.setNavs(collect);
         }
 
 
         return result;
     }
 
-    private String replaceQueryString(SearchParam param, String key, String value) {
-        // 解决编码问题，前端参数使用UTF-8编码了
-        String encode = null;
-        encode = UriEncoder.encode(value);
-//                try {
-//                    encode = URLEncoder.encode(attr, "UTF-8");// java将空格转义成了+号
-//                    encode = encode.replace("+", "%20");// 浏览器将空格转义成了%20，差异化处理，否则_queryString与encode匹配失败
-//                } catch (UnsupportedEncodingException e) {
-//                    e.printStackTrace();
-//                }
-        // TODO BUG，第一个参数不带&
-        // 替换掉当前查询条件，剩下的查询条件即是回退地址
-        String replace = param.get_queryString().replace("&" + key + "=" + encode, "");
-        return replace;
+
+    /**
+     * 准备检索请求
+     * 模糊匹配，过滤（按照属性，分类，品牌，价格区间，库存），排序，分页，高亮，聚合分析
+     *
+     * @return
+     */
+    private SearchRequest buildSearchRequest(SearchParam param) {
+
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        /**
+         * 模糊匹配，过滤（按照属性，分类，品牌，价格区间，库存）
+         */
+        //1. 构建bool-query
+        BoolQueryBuilder boolQueryBuilder = new BoolQueryBuilder();
+
+        //1.1 bool-must
+        if (!StringUtils.isEmpty(param.getKeyword())) {
+            boolQueryBuilder.must(QueryBuilders.matchQuery("skuTitle", param.getKeyword()));
+        }
+
+        //1.2 bool-fiter
+        //1.2.1 catelogId
+        if (null != param.getCatalog3Id()) {
+            boolQueryBuilder.filter(QueryBuilders.termQuery("catalogId", param.getCatalog3Id()));
+        }
+
+        //1.2.2 brandId
+        if (null != param.getBrandId() && param.getBrandId().size() > 0) {
+            boolQueryBuilder.filter(QueryBuilders.termsQuery("brandId", param.getBrandId()));
+        }
+
+        //1.2.3 attrs
+        if (param.getAttrs() != null && param.getAttrs().size() > 0) {
+
+            param.getAttrs().forEach(item -> {
+                //attrs=1_5寸:8寸&2_16G:8G
+                BoolQueryBuilder boolQuery = QueryBuilders.boolQuery();
+
+
+                //attrs=1_5寸:8寸
+                String[] s = item.split("_");
+                String attrId = s[0];
+                String[] attrValues = s[1].split(":");//这个属性检索用的值
+                boolQuery.must(QueryBuilders.termQuery("attrs.attrId", attrId));
+                boolQuery.must(QueryBuilders.termsQuery("attrs.attrValue", attrValues));
+
+                NestedQueryBuilder nestedQueryBuilder = QueryBuilders.nestedQuery("attrs", boolQuery, ScoreMode.None);
+                boolQueryBuilder.filter(nestedQueryBuilder);
+            });
+
+        }
+
+        //1.2.4 hasStock
+        if (null != param.getHasStock()) {
+            boolQueryBuilder.filter(QueryBuilders.termQuery("hasStock", param.getHasStock() == 1));
+        }
+
+
+        //1.2.5 skuPrice
+        if (!StringUtils.isEmpty(param.getSkuPrice())) {
+            //skuPrice形式为：1_500或_500或500_
+            RangeQueryBuilder rangeQueryBuilder = QueryBuilders.rangeQuery("skuPrice");
+            String[] price = param.getSkuPrice().split("_");
+            if (price.length == 2) {
+                rangeQueryBuilder.gte(price[0]).lte(price[1]);
+            } else if (price.length == 1) {
+                if (param.getSkuPrice().startsWith("_")) {
+                    rangeQueryBuilder.lte(price[1]);
+                }
+                if (param.getSkuPrice().endsWith("_")) {
+                    rangeQueryBuilder.gte(price[0]);
+                }
+            }
+            boolQueryBuilder.filter(rangeQueryBuilder);
+        }
+
+        //封装所有的查询条件
+        searchSourceBuilder.query(boolQueryBuilder);
+
+
+        /**
+         * 排序，分页，高亮
+         */
+
+        //排序
+        //形式为sort=hotScore_asc/desc
+        if (!StringUtils.isEmpty(param.getSort())) {
+            String sort = param.getSort();
+            String[] sortFileds = sort.split("_");
+
+            SortOrder sortOrder = "asc".equalsIgnoreCase(sortFileds[1]) ? SortOrder.ASC : SortOrder.DESC;
+
+            searchSourceBuilder.sort(sortFileds[0], sortOrder);
+        }
+
+        //分页
+        searchSourceBuilder.from((param.getPageNum() - 1) * EsConstant.PRODUCT_PAGESIZE);
+        searchSourceBuilder.size(EsConstant.PRODUCT_PAGESIZE);
+
+        //高亮
+        if (!StringUtils.isEmpty(param.getKeyword())) {
+
+            HighlightBuilder highlightBuilder = new HighlightBuilder();
+            highlightBuilder.field("skuTitle");
+            highlightBuilder.preTags("<b style='color:red'>");
+            highlightBuilder.postTags("</b>");
+
+            searchSourceBuilder.highlighter(highlightBuilder);
+        }
+
+
+        /**
+         * 聚合分析
+         */
+        //1. 按照品牌进行聚合
+        TermsAggregationBuilder brand_agg = AggregationBuilders.terms("brand_agg");
+        brand_agg.field("brandId").size(50);
+
+
+        //1.1 品牌的子聚合-品牌名聚合
+        brand_agg.subAggregation(AggregationBuilders.terms("brand_name_agg")
+                .field("brandName").size(1));
+        //1.2 品牌的子聚合-品牌图片聚合
+        brand_agg.subAggregation(AggregationBuilders.terms("brand_img_agg")
+                .field("brandImg").size(1));
+
+        searchSourceBuilder.aggregation(brand_agg);
+
+        //2. 按照分类信息进行聚合
+        TermsAggregationBuilder catalog_agg = AggregationBuilders.terms("catalog_agg");
+        catalog_agg.field("catalogId").size(20);
+
+        catalog_agg.subAggregation(AggregationBuilders.terms("catalog_name_agg").field("catalogName").size(1));
+
+        searchSourceBuilder.aggregation(catalog_agg);
+
+        //2. 按照属性信息进行聚合
+        NestedAggregationBuilder attr_agg = AggregationBuilders.nested("attr_agg", "attrs");
+        //2.1 按照属性ID进行聚合
+        TermsAggregationBuilder attr_id_agg = AggregationBuilders.terms("attr_id_agg").field("attrs.attrId");
+        attr_agg.subAggregation(attr_id_agg);
+        //2.1.1 在每个属性ID下，按照属性名进行聚合
+        attr_id_agg.subAggregation(AggregationBuilders.terms("attr_name_agg").field("attrs.attrName").size(1));
+        //2.1.1 在每个属性ID下，按照属性值进行聚合
+        attr_id_agg.subAggregation(AggregationBuilders.terms("attr_value_agg").field("attrs.attrValue").size(50));
+        searchSourceBuilder.aggregation(attr_agg);
+
+        log.debug("构建的DSL语句 {}", searchSourceBuilder.toString());
+
+        SearchRequest searchRequest = new SearchRequest(new String[]{EsConstant.PRODUCT_INDEX}, searchSourceBuilder);
+
+        return searchRequest;
     }
-
-
 }

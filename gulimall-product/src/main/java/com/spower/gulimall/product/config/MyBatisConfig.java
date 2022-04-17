@@ -6,6 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * @author CZQ
+ */
 @Configuration
 @EnableTransactionManagement //开启事务
 @MapperScan("com.spower.gulimall.product.dao")

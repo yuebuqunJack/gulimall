@@ -12,6 +12,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * springcach配置
+ * @author CZQ
  */
 @EnableConfigurationProperties(CacheProperties.class)
 @EnableCaching

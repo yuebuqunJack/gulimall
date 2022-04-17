@@ -1,0 +1,137 @@
+{
+    "from": 0,
+    "size": 2,
+    "query": {
+        "bool": {
+            "adjust_pure_negative": true,
+            "boost": 1.0
+        }
+    },
+    "aggregations": {
+        "brand_agg": {
+            "terms": {
+                "field": "brandId",
+                "size": 50,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": [{
+                    "_count": "desc"
+                }, {
+                    "_key": "asc"
+                }]
+            },
+            "aggregations": {
+                "brand_name_agg": {
+                    "terms": {
+                        "field": "brandName",
+                        "size": 1,
+                        "min_doc_count": 1,
+                        "shard_min_doc_count": 0,
+                        "show_term_doc_count_error": false,
+                        "order": [{
+                            "_count": "desc"
+                        }, {
+                            "_key": "asc"
+                        }]
+                    }
+                },
+                "brand_img_agg": {
+                    "terms": {
+                        "field": "brandImg",
+                        "size": 1,
+                        "min_doc_count": 1,
+                        "shard_min_doc_count": 0,
+                        "show_term_doc_count_error": false,
+                        "order": [{
+                            "_count": "desc"
+                        }, {
+                            "_key": "asc"
+                        }]
+                    }
+                }
+            }
+        },
+        "catalog_agg": {
+            "terms": {
+                "field": "catalogId",
+                "size": 20,
+                "min_doc_count": 1,
+                "shard_min_doc_count": 0,
+                "show_term_doc_count_error": false,
+                "order": [{
+                    "_count": "desc"
+                }, {
+                    "_key": "asc"
+                }]
+            },
+            "aggregations": {
+                "catalog_name_agg": {
+                    "terms": {
+                        "field": "catalogName",
+                        "size": 1,
+                        "min_doc_count": 1,
+                        "shard_min_doc_count": 0,
+                        "show_term_doc_count_error": false,
+                        "order": [{
+                            "_count": "desc"
+                        }, {
+                            "_key": "asc"
+                        }]
+                    }
+                }
+            }
+        },
+        "attr_agg": {
+            "nested": {
+                "path": "attrs"
+            },
+            "aggregations": {
+                "attr_id_agg": {
+                    "terms": {
+                        "field": "attrs.attrId",
+                        "size": 50,
+                        "min_doc_count": 1,
+                        "shard_min_doc_count": 0,
+                        "show_term_doc_count_error": false,
+                        "order": [{
+                            "_count": "desc"
+                        }, {
+                            "_key": "asc"
+                        }]
+                    },
+                    "aggregations": {
+                        "attr_name_agg": {
+                            "terms": {
+                                "field": "attrs.attrName",
+                                "size": 1,
+                                "min_doc_count": 1,
+                                "shard_min_doc_count": 0,
+                                "show_term_doc_count_error": false,
+                                "order": [{
+                                    "_count": "desc"
+                                }, {
+                                    "_key": "asc"
+                                }]
+                            }
+                        },
+                        "attr_value_agg": {
+                            "terms": {
+                                "field": "attrs.attrValue",
+                                "size": 50,
+                                "min_doc_count": 1,
+                                "shard_min_doc_count": 0,
+                                "show_term_doc_count_error": false,
+                                "order": [{
+                                    "_count": "desc"
+                                }, {
+                                    "_key": "asc"
+                                }]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

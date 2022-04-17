@@ -28,7 +28,6 @@ public class SkuFullReductionController {
 
     @PostMapping("/saveinfo")
     public R saveInfo(@RequestBody SkuReductionTo skuReductionTo) {
-
         skuFullReductionService.saveSkuReduction(skuReductionTo);
 
         return R.ok();

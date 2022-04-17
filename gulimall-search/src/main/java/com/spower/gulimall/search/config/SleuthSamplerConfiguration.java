@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * 解决使用zipkin项目启动死锁问题
- * @Author: wanzenghui
- * @Date: 2022/1/8 18:50
+ * @author CZQ
  */
 @Configuration
 public class SleuthSamplerConfiguration {

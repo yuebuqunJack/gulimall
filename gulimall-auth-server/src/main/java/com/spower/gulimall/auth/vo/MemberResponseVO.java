@@ -1,4 +1,4 @@
-package com.spower.common.vo;
+package com.spower.gulimall.auth.vo;
 
 import lombok.Data;
 import lombok.ToString;
@@ -7,15 +7,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @Description:
- * @Created: with IntelliJ IDEA.
- * @author: 夏沫止水
- * @createTime: 2020-06-28 14:51
- **/
-
+ * 会员
+ *
+ * @author Jack.c
+ * @email aa841264873@qq.com
+ * @date 2022-03-17 17:00:29
+ */
 @ToString
 @Data
-public class MemberResponseVo implements Serializable {
+public class MemberResponseVO implements Serializable {
 
     private static final long serialVersionUID = 5573669251256409786L;
 
@@ -90,9 +90,9 @@ public class MemberResponseVo implements Serializable {
     private Date createTime;
 
     /**
-     * 社交登录UID
+     * 微博社交账户uid
      */
-    private String socialUid;
+    private String weiboUid;
 
     /**
      * 社交登录TOKEN

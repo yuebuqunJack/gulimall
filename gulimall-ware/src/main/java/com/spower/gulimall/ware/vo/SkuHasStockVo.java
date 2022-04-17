@@ -3,11 +3,8 @@ package com.spower.gulimall.ware.vo;
 import lombok.Data;
 
 /**
- * @Description:
- * @Created: with IntelliJ IDEA.
- * @author: 夏沫止水
- * @createTime: 2020-06-06 15:38
- **/
+ * @author CZQ
+ */
 
 @Data
 public class SkuHasStockVo {

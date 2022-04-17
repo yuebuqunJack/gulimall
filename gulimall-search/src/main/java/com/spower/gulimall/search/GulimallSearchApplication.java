@@ -2,14 +2,18 @@ package com.spower.gulimall.search;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-//import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
-//
-//@EnableRedisHttpSession
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+
+/**
+ * @author CZQ
+ */
+@EnableRedisHttpSession
 @EnableFeignClients
-@EnableDiscoveryClient
-@SpringBootApplication
+@EnableDiscoveryClient //nacos服务发现
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 public class GulimallSearchApplication {
 
     public static void main(String[] args) {

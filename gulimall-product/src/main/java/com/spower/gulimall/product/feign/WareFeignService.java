@@ -7,12 +7,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
+/**
+ * @author CZQ
+ */
 @FeignClient("gulimall-ware")
 public interface WareFeignService {
 
     /**
      * 查询sku是否有库存
      */
-    @PostMapping("/ware/waresku/hasstock")
+    @PostMapping("/ware/waresku/hasStock")  //ware/waresku/hasStock
     R getSkusHasStock(@RequestBody List<Long> skuIds);
 }

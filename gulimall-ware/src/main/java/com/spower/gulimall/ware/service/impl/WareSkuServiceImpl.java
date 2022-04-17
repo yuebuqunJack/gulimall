@@ -1,6 +1,5 @@
 package com.spower.gulimall.ware.service.impl;
 
-import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -39,6 +38,9 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 
+/**
+ * @author CZQ
+ */
 @RabbitListener(queues = "stock.release.stock.queue")
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {

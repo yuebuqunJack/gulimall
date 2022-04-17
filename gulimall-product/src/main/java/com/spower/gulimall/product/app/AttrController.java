@@ -15,14 +15,9 @@ import com.spower.gulimall.product.service.AttrService;
 import com.spower.common.utils.PageUtils;
 import com.spower.common.utils.R;
 
-
-
 /**
  * 商品属性
- *
- * @author leifengyang
- * @email leifengyang@gmail.com
- * @date 2019-10-01 22:50:32
+ * @author CZQ
  */
 @RestController
 @RequestMapping("product/attr")
