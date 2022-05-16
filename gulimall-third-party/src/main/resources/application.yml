@@ -8,12 +8,12 @@ spring:
     nacos:
       discovery:
         server-addr: 127.0.0.1:8848
-#    sentinel:
-#      transport:
-#        # 应用开启端口，接收dashboard限流规则，如果被占用会默认+1
-#        port: 8719
-#        # 控制台ip:port
-#        dashboard: 127.0.0.1:8333
+    sentinel:
+      transport:
+        # 应用开启端口，接收dashboard限流规则，如果被占用会默认+1
+        port: 8719
+        # 控制台ip:port
+        dashboard: 127.0.0.1:8333
     alicloud:
       access-key: LTAI5t95sFwNdrGuoy2FMJtR
       secret-key: VhLu77rWpm74QefRuJn7mlxsVcDq8Z
@@ -47,15 +47,15 @@ tencentsms:
 #    time-zone: GMT+8
 
 # 开启feign熔断，开启后能够监控到远程调用资源
-#feign:
-#  sentinel:
-#    enabled: true
+feign:
+  sentinel:
+    enabled: true
 # 审计模块暴露，应用健康情况（配合sentinel dashboard）
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        exclude: '*'
+management:
+  endpoints:
+    web:
+      exposure:
+        exclude: '*'
 
 
 # 开启日志

@@ -12,9 +12,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * sku信息
  *
- * @author leifengyang
- * @email leifengyang@gmail.com
- * @date 2019-10-01 21:08:49
+ * @author CZQ
  */
 public interface SkuInfoService extends IService<SkuInfoEntity> {
 
@@ -22,11 +20,15 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
 
     void saveSkuInfo(SkuInfoEntity skuInfoEntity);
 
-    PageUtils queryPageByCondition(Map<String, Object> params);
-
+    PageUtils queryPageCondition(Map<String, Object> params);
 
     List<SkuInfoEntity> getSkusBySpuId(Long spuId);
 
+    /**
+     * 查询商品详情
+     * @param skuId
+     * @return
+     */
     SkuItemVo item(Long skuId) throws ExecutionException, InterruptedException;
 }
 

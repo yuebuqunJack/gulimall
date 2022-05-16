@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.MemberPriceEntity;
 import com.spower.gulimall.coupon.service.MemberPriceService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("memberPriceService")
 public class MemberPriceServiceImpl extends ServiceImpl<MemberPriceDao, MemberPriceEntity> implements MemberPriceService {
 

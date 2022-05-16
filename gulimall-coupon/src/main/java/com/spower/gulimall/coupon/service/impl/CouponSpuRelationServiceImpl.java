@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.CouponSpuRelationEntity;
 import com.spower.gulimall.coupon.service.CouponSpuRelationService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("couponSpuRelationService")
 public class CouponSpuRelationServiceImpl extends ServiceImpl<CouponSpuRelationDao, CouponSpuRelationEntity> implements CouponSpuRelationService {
 

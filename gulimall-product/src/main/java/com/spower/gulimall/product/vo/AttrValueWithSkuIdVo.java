@@ -8,7 +8,6 @@ import lombok.Data;
  * @author: jackc
  * @createTime: 2022-04-06 18:59
  **/
-
 @Data
 public class AttrValueWithSkuIdVo {
 

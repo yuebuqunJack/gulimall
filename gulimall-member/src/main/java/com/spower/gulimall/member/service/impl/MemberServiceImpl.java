@@ -36,6 +36,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.annotation.Resource;
 
 
+/**
+ * @author CZQ
+ */
 @Service("memberService")
 public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> implements MemberService {
 

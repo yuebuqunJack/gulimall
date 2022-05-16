@@ -9,13 +9,8 @@ import lombok.ToString;
 import java.util.List;
 
 /**
- * @Description:
- * @Created: with IntelliJ IDEA.
- * @author: jackc
- * @createTime: 2022-04-06 16:46
- **/
-
-
+ * @author CZQ
+ */
 @ToString
 @Data
 public class SkuItemVo {
@@ -38,5 +33,6 @@ public class SkuItemVo {
     private List<SpuItemAttrGroupVo> groupAttrs;
 
     //6、秒杀商品的优惠信息
-//    private SeckillSkuVo seckillSkuVo;
+    private SeckillSkuVo seckillSkuVo;
+
 }

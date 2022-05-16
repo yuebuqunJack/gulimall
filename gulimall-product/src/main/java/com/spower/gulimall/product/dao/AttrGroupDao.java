@@ -12,9 +12,7 @@ import java.util.List;
 /**
  * 属性分组
  *
- * @author leifengyang
- * @email leifengyang@gmail.com
- * @date 2019-10-01 21:08:49
+ * @author CZQ
  */
 @Mapper
 public interface AttrGroupDao extends BaseMapper<AttrGroupEntity> {

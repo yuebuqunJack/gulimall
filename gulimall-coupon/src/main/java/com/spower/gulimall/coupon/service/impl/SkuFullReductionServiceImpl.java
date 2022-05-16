@@ -1,7 +1,8 @@
 package com.spower.gulimall.coupon.service.impl;
 
-import com.spower.common.to.MemberPrice;
 import com.spower.common.to.SkuReductionTo;
+import com.spower.common.to.product.MemberPrice;
+import com.spower.common.to.product.SkuReductionTO;
 import com.spower.gulimall.coupon.entity.MemberPriceEntity;
 import com.spower.gulimall.coupon.entity.SkuLadderEntity;
 import com.spower.gulimall.coupon.service.MemberPriceService;
@@ -26,6 +27,9 @@ import com.spower.gulimall.coupon.entity.SkuFullReductionEntity;
 import com.spower.gulimall.coupon.service.SkuFullReductionService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("skuFullReductionService")
 public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao, SkuFullReductionEntity> implements SkuFullReductionService {
 
@@ -46,32 +50,32 @@ public class SkuFullReductionServiceImpl extends ServiceImpl<SkuFullReductionDao
     }
 
     @Override
-    public void saveSkuReduction(SkuReductionTo skuReductionTo) {
+    public void saveSkuReduction(SkuReductionTO skuReductionTO) {
 
         //1、保存满减打折、会员价
         //1、1）、sku的优惠、满减等信息：gulimall_sms--->sms_sku_ladder、sms_sku_full_reduction、sms_member_price
         SkuLadderEntity skuLadderEntity = new SkuLadderEntity();
-        BeanUtils.copyProperties(skuReductionTo,skuLadderEntity);
-        skuLadderEntity.setAddOther(skuReductionTo.getCountStatus());
+        BeanUtils.copyProperties(skuReductionTO,skuLadderEntity);
+        skuLadderEntity.setAddOther(skuReductionTO.getCountStatus());
 
-        if (skuReductionTo.getFullCount() > 0) {
+        if (skuReductionTO.getFullCount() > 0) {
             skuLadderService.save(skuLadderEntity);
         }
 
         //2、sms_sku_full_reduction
         SkuFullReductionEntity skuFullReductionEntity = new SkuFullReductionEntity();
-        BeanUtils.copyProperties(skuReductionTo,skuFullReductionEntity);
+        BeanUtils.copyProperties(skuReductionTO,skuFullReductionEntity);
         if (skuFullReductionEntity.getFullPrice().compareTo(BigDecimal.ZERO) == 1) {
             this.save(skuFullReductionEntity);
         }
 
 
         //3、sms_member_price
-        List<MemberPrice> memberPrice = skuReductionTo.getMemberPrice();
+        List<MemberPrice> memberPrice = skuReductionTO.getMemberPrice();
 
         List<MemberPriceEntity> collect = memberPrice.stream().map(mem -> {
             MemberPriceEntity memberPriceEntity = new MemberPriceEntity();
-            memberPriceEntity.setSkuId(skuReductionTo.getSkuId());
+            memberPriceEntity.setSkuId(skuReductionTO.getSkuId());
             memberPriceEntity.setMemberLevelId(mem.getId());
             memberPriceEntity.setMemberLevelName(mem.getName());
             memberPriceEntity.setMemberPrice(mem.getPrice());

@@ -1,10 +1,10 @@
 package com.spower.gulimall.search.config;
-
-import brave.sampler.Sampler;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.sleuth.sampler.ProbabilityBasedSampler;
-import org.springframework.cloud.sleuth.sampler.SamplerProperties;
-import org.springframework.context.annotation.Bean;
+//
+//import brave.sampler.Sampler;
+//import org.springframework.beans.factory.annotation.Value;
+//import org.springframework.cloud.sleuth.sampler.ProbabilityBasedSampler;
+//import org.springframework.cloud.sleuth.sampler.SamplerProperties;
+//import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**

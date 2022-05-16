@@ -21,7 +21,6 @@
         </collection>
     </resultMap>
     <select id="getAttrGroupWithAttrsBySpuId" resultMap="spuAttrGroup">
-
         SELECT product.spu_id,
                pag.attr_group_id,
                pag.attr_group_name,
@@ -33,6 +32,5 @@
                  LEFT JOIN pms_attr_group pag ON paar.attr_group_id = pag.attr_group_id
         WHERE product.spu_id = #{spuId}
           AND pag.catelog_id = #{catalogId}
-
     </select>
 </mapper>

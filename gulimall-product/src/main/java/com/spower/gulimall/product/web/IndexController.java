@@ -48,7 +48,7 @@ public class IndexController {
     }
 
 
-    //catalogLoader.js - index/json/catalog.json
+    //（F:\nginx-1.20.1\html\static\index\js\catalog.json）
     @GetMapping(value = "/index/catalog.json", produces = "application/json;charset=utf-8")
     @ResponseBody
     public Map<String, List<Catelog2Vo>> getCatalogJson() {

@@ -2,9 +2,6 @@ package com.spower.common.exception;
 
 /**
  * @Description: 错误状态码枚举
- * @Created: with IntelliJ IDEA.
- * @author: 夏沫止水
- * @createTime: 2020-05-27 17:29
  *
  * 错误码和错误信息定义类
  * 1. 错误码定义规则为5为数字
@@ -19,8 +16,7 @@ package com.spower.common.exception;
  *  13: 购物车
  *  14: 物流
  *  15：用户
- *
- *
+ * @author CZQ
  *
  **/
 

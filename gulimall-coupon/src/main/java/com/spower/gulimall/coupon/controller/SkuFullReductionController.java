@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import com.spower.common.to.SkuReductionTo;
+import com.spower.common.to.product.SkuReductionTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,8 @@ public class SkuFullReductionController {
     private SkuFullReductionService skuFullReductionService;
 
     @PostMapping("/saveinfo")
-    public R saveInfo(@RequestBody SkuReductionTo skuReductionTo) {
-        skuFullReductionService.saveSkuReduction(skuReductionTo);
+    public R saveInfo(@RequestBody SkuReductionTO skuReductionTO) {
+        skuFullReductionService.saveSkuReduction(skuReductionTO);
 
         return R.ok();
     }

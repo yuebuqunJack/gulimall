@@ -1,5 +1,10 @@
 package com.spower.gulimall.product;
 
+import com.spower.gulimall.product.dao.AttrGroupDao;
+import com.spower.gulimall.product.dao.SkuSaleAttrValueDao;
+import com.spower.gulimall.product.vo.SkuItemSaleAttrVo;
+import com.spower.gulimall.product.vo.SkuItemVo;
+import com.spower.gulimall.product.vo.SpuItemAttrGroupVo;
 import org.junit.jupiter.api.Test;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,6 +27,12 @@ public class GulimallProductApplicationTests {
 
     @Autowired
     RedissonClient redissonClient;
+
+    @Autowired
+    AttrGroupDao attrGroupDao;
+
+    @Autowired
+    SkuSaleAttrValueDao skuSaleAttrValueDao;
 
     @Test
     public void testStringRedisTemplate() {
@@ -41,5 +53,13 @@ public class GulimallProductApplicationTests {
     @Test
     public void testStringRedisTemplate2() {
         System.out.println(redissonClient);
+    }
+
+    @Test
+    public void test() {
+//        List<SpuItemAttrGroupVo> attrGroupVos = attrGroupDao.getAttrGroupWithAttrsBySpuId(2L, 225L);
+//        System.out.println(attrGroupVos);
+        List<SkuItemSaleAttrVo> saleAttrBySpuId = skuSaleAttrValueDao.getSaleAttrBySpuId(2L);
+        System.out.println(saleAttrBySpuId);
     }
 }

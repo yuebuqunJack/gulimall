@@ -1,22 +1,19 @@
 package com.spower.gulimall.product.app;
 
-import java.util.Arrays;
-import java.util.Map;
-
+import com.spower.common.utils.PageUtils;
+import com.spower.common.utils.R;
+import com.spower.gulimall.product.entity.SpuInfoEntity;
+import com.spower.gulimall.product.service.SpuInfoService;
 import com.spower.gulimall.product.vo.SpuSaveVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.spower.gulimall.product.entity.SpuInfoEntity;
-import com.spower.gulimall.product.service.SpuInfoService;
-import com.spower.common.utils.PageUtils;
-import com.spower.common.utils.R;
+import java.util.Arrays;
+import java.util.Map;
 
 
 /**
  * spu信息
- *
- * @author CZQ
  */
 @RestController
 @RequestMapping("product/spuinfo")
@@ -25,10 +22,23 @@ public class SpuInfoController {
     private SpuInfoService spuInfoService;
 
     /**
-     * spu商品上架
+     * 根据skuId查询spu的信息
+     *
+     * @param skuId
+     * @return
      */
-    @PostMapping("/{spuId}/up")
+    @GetMapping(value = "/skuId/{skuId}")
+    public R getSpuInfoBySkuId(@PathVariable("skuId") Long skuId) {
+
+        SpuInfoEntity spuInfoEntity = spuInfoService.getSpuInfoBySkuId(skuId);
+
+        return R.ok().setData(spuInfoEntity);
+    }
+
+    //商品上架
+    @PostMapping(value = "/{spuId}/up")
     public R spuUp(@PathVariable("spuId") Long spuId) {
+
         spuInfoService.up(spuId);
 
         return R.ok();
@@ -39,7 +49,7 @@ public class SpuInfoController {
      */
     @RequestMapping("/list")
     public R list(@RequestParam Map<String, Object> params) {
-        PageUtils page = spuInfoService.queryPageByCondition(params);
+        PageUtils page = spuInfoService.queryPageByCondtion(params);
 
         return R.ok().put("page", page);
     }
@@ -60,7 +70,9 @@ public class SpuInfoController {
      */
     @RequestMapping("/save")
     public R save(@RequestBody SpuSaveVo vo) {
-        spuInfoService.saveSpuInfo(vo);
+        //spuInfoService.save(spuInfo);
+
+        spuInfoService.savesupInfo(vo);
 
         return R.ok();
     }

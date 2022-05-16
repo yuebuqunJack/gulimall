@@ -2,7 +2,7 @@ server:
   port: 7000
   servlet:
     session:
-      timeout: 3000m
+      timeout: 60000m
 
 spring:
   application:
@@ -11,42 +11,41 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+    sentinel:
+      transport:
+        #配置sentinel dashboard地址
+        dashboard: localhost:8666
+        #默认8719端口，假如被占用会自动从8719开始依次+1扫描，直至找到未被占用的端口
+        port: 8719
   datasource:
     username: root
-    password: root
+    password: 7410852963w
     url: jdbc:mysql://175.178.212.59:3306/gulimall_sms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-
-
-#    sentinel:
-#      transport:
-#        #配置sentinel dashboard地址
-#        dashboard: localhost:8080
-
-#  redis:
-#    host: 192.168.77.130
-#    port: 6379
+  redis:
+    host: 175.178.212.59
+    port: 6379
+    timeout: 90000ms
 
 #开启feign对sentinel的支持
 #feign:
 #  sentinel:
 #    enabled: true
 
-#  jackson:
-#    date-format: yyyy-MM-dd HH:mm:ss
-#
-#    #关闭thymeleaf缓存
-#  thymeleaf:
-#    cache: false
-#
-#  session:
-#    store-type: redis
-#
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+
+    #关闭thymeleaf缓存
+  thymeleaf:
+    cache: false
+
+  session:
+    store-type: redis
+
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
-  #
-  #  #设置实体类的自增主键
+  #设置实体类的自增主键
   global-config:
     db-config:
       id-type: auto
@@ -61,16 +60,13 @@ feign:
         connectTimeout: 1110000
         readTimeout: 1110000
 
+logging:
+  level:
+    com.spower.gulimall: error
 
-#
-#logging:
-#  level:
-#    com.spower.gulimall: error
-#
-#
-##暴露所有端点
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: '*'
+#暴露所有端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

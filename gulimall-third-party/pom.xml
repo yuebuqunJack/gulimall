@@ -30,6 +30,10 @@
                     <groupId>com.baomidou</groupId>
                     <artifactId>mybatis-plus-boot-starter</artifactId>
                 </exclusion>
+                    <exclusion>
+                        <groupId>com.alibaba.cloud</groupId>
+                        <artifactId>spring-cloud-starter-alibaba-seata</artifactId>
+                    </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -78,6 +82,12 @@
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
                 <version>2.2.1.RELEASE</version>
+            </dependency>
+
+            <!--1.8有就不用引入会造成循环依赖：审计模块 查询springboot的健康信息 sentinel的dashbord可以实时监控-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-actuator</artifactId>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,10 +1,10 @@
-package com.spower.order.gulimallorder;
+package com.spower.gulimall.seckill;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class GulimallOrderApplicationTests {
+class GulimallSeckillApplicationTests {
 
     @Test
     void contextLoads() {

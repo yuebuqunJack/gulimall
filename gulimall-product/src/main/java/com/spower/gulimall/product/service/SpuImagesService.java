@@ -10,15 +10,12 @@ import java.util.Map;
 /**
  * spu图片
  *
- * @author leifengyang
- * @email leifengyang@gmail.com
- * @date 2019-10-01 21:08:49
+ * @author CZQ
  */
 public interface SpuImagesService extends IService<SpuImagesEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
     void saveImages(Long id, List<String> images);
-
 }
 

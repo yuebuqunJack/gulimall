@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.HomeSubjectSpuEntity;
 import com.spower.gulimall.coupon.service.HomeSubjectSpuService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("homeSubjectSpuService")
 public class HomeSubjectSpuServiceImpl extends ServiceImpl<HomeSubjectSpuDao, HomeSubjectSpuEntity> implements HomeSubjectSpuService {
 

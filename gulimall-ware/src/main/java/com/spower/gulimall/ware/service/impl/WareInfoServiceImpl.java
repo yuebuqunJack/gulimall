@@ -21,6 +21,9 @@ import java.math.BigDecimal;
 import java.util.Map;
 
 
+/**
+ * @author CZQ
+ */
 @Service("wareInfoService")
 public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity> implements WareInfoService {
 
@@ -50,8 +53,33 @@ public class WareInfoServiceImpl extends ServiceImpl<WareInfoDao, WareInfoEntity
         return new PageUtils(page);
     }
 
+    /**
+     * 计算运费
+     * @param addrId
+     * @return
+     */
     @Override
     public FareVo getFare(Long addrId) {
+
+        FareVo fareVo = new FareVo();
+
+        //收获地址的详细信息
+        R addrInfo = memberFeignService.info(addrId);
+
+        MemberAddressVo memberAddressVo = addrInfo.getData("memberReceiveAddress",new TypeReference<MemberAddressVo>() {});
+
+        if (memberAddressVo != null) {
+            String phone = memberAddressVo.getPhone();
+            //截取用户手机号码最后一位作为我们的运费计算
+            //1558022051
+            String fare = phone.substring(phone.length() - 10, phone.length()-8);
+            BigDecimal bigDecimal = new BigDecimal(fare);
+
+            fareVo.setFare(bigDecimal);
+            fareVo.setAddress(memberAddressVo);
+
+            return fareVo;
+        }
         return null;
     }
 

@@ -10,10 +10,8 @@ import lombok.Data;
 
 /**
  * spu信息介绍
- * 
- * @author leifengyang
- * @email leifengyang@gmail.com
- * @date 2019-10-01 21:08:49
+ *
+ * @author CZQ
  */
 @Data
 @TableName("pms_spu_info_desc")
@@ -24,10 +22,10 @@ public class SpuInfoDescEntity implements Serializable {
 	 * 商品id
 	 */
 	@TableId(type = IdType.INPUT)
-	private Long spuId;
+	Long spuId;
 	/**
 	 * 商品介绍
 	 */
-	private String decript;
+	String decript;
 
 }

@@ -12,10 +12,9 @@ import java.util.List;
 
 /**
  * 订单
- * 
- * @author wanzenghui
- * @email lemon_wan@aliyun.com
- * @date 2021-09-02 22:57:46
+ *
+ *
+ * @author CZQ
  */
 @Data
 @TableName("oms_order")

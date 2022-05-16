@@ -7,6 +7,9 @@ import lombok.Data;
 
 import java.util.List;
 
+/**
+ * @author CZQ
+ */
 @Data
 public class SkuItemVO {
     /**

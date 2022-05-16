@@ -1,5 +1,6 @@
 package com.spower.gulimall.ware.service.impl;
 
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
 /**
  * @author CZQ
  */
-@RabbitListener(queues = "stock.release.stock.queue")
+//@RabbitListener(queues = "stock.release.stock.queue")
 @Service("wareSkuService")
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
@@ -85,7 +86,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
         return new PageUtils(page);
     }
-
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -229,54 +229,57 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     @Override
     public void unlockStock(StockLockedTo to) {
-//        //库存工作单的id
-//        StockDetailTo detail = to.getDetailTo();
-//        Long detailId = detail.getId();
-//
-//        /**
-//         * 解锁
-//         * 1、查询数据库关于这个订单锁定库存信息
-//         *   有：证明库存锁定成功了
-//         *      解锁：订单状况
-//         *          1、没有这个订单，必须解锁库存
-//         *          2、有这个订单，不一定解锁库存
-//         *              订单状态：已取消：解锁库存
-//         *                      已支付：不能解锁库存
-//         */
-//        WareOrderTaskDetailEntity taskDetailInfo = wareOrderTaskDetailService.getById(detailId);
-//        if (taskDetailInfo != null) {
-//            //查出wms_ware_order_task工作单的信息
-//            Long id = to.getId();
-//            WareOrderTaskEntity orderTaskInfo = wareOrderTaskService.getById(id);
-//            //获取订单号查询订单状态
-//            String orderSn = orderTaskInfo.getOrderSn();
-//            //远程查询订单信息
-//            R orderData = orderFeignService.getOrderStatus(orderSn);
-//            if (orderData.getCode() == 0) {
-//                //订单数据返回成功
-//                OrderVo orderInfo = orderData.getData("data", new TypeReference<OrderVo>() {});
-//
-//                //判断订单状态是否已取消或者支付或者订单不存在
-//                if (orderInfo == null || orderInfo.getStatus() == 4) {
-//                    //订单已被取消，才能解锁库存
-//                    if (taskDetailInfo.getLockStatus() == 1) {
-//                        //当前库存工作单详情状态1，已锁定，但是未解锁才可以解锁
-//                        unLockStock(detail.getSkuId(),detail.getWareId(),detail.getSkuNum(),detailId);
-//                    }
-//                }
-//            } else {
-//                //消息拒绝以后重新放在队列里面，让别人继续消费解锁
-//                //远程调用服务失败
-//                throw new RuntimeException("远程调用服务失败");
-//            }
-//        } else {
-//            //无需解锁
-//        }
+        //库存工作单的id
+        StockDetailTo detail = to.getDetailTo();
+        Long detailId = detail.getId();
+
+        /**
+         * 解锁
+         * 1、查询数据库关于这个订单锁定库存信息
+         *   有：证明库存锁定成功了
+         *      解锁：订单状况
+         *          1、没有这个订单，必须解锁库存
+         *          2、有这个订单，不一定解锁库存
+         *              订单状态：已取消：解锁库存
+         *                      已支付：不能解锁库存
+         */
+        WareOrderTaskDetailEntity taskDetailInfo = wareOrderTaskDetailService.getById(detailId);
+        if (taskDetailInfo != null) {
+            //查出wms_ware_order_task工作单的信息
+            Long id = to.getId();
+            WareOrderTaskEntity orderTaskInfo = wareOrderTaskService.getById(id);
+            //获取订单号查询订单状态
+            String orderSn = orderTaskInfo.getOrderSn();
+            //远程查询订单信息
+            R orderData = orderFeignService.getOrderStatus(orderSn);
+            if (orderData.getCode() == 0) {
+                //订单数据返回成功
+                OrderVo orderInfo = orderData.getData("data", new TypeReference<OrderVo>() {
+                });
+
+                //判断订单状态是否已取消或者支付或者订单不存在
+                if (orderInfo == null || orderInfo.getStatus() == 4) {
+                    //订单已被取消，才能解锁库存
+                    if (taskDetailInfo.getLockStatus() == 1) {
+                        //当前库存工作单详情状态1，已锁定，但是未解锁才可以解锁
+                        unLockStock(detail.getSkuId(), detail.getWareId(), detail.getSkuNum(), detailId);
+                    }
+                }
+            } else {
+                //消息拒绝以后重新放在队列里面，让别人继续消费解锁
+                //远程调用服务失败
+                throw new RuntimeException("远程调用服务失败");
+            }
+        } else {
+            //无需解锁
+        }
     }
 
     /**
      * 防止订单服务卡顿，导致订单状态消息一直改不了，库存优先到期，查订单状态新建，什么都不处理
      * 导致卡顿的订单，永远都不能解锁库存
+     *
+     * 个人理解：若下了订单这个时候锁定了库存10台手机，但是客户迟迟未支付且超时，这个时候订单服务宕机就不能够解锁库存。这个时候就就利用库存服务未宕机，发送消息到mq，利用库存服务的mq查看订单状态解锁库存，达到双保险的目的。
      *
      * @param orderTo
      */

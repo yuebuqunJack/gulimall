@@ -12,7 +12,9 @@ import com.spower.gulimall.coupon.dao.SeckillPromotionDao;
 import com.spower.gulimall.coupon.entity.SeckillPromotionEntity;
 import com.spower.gulimall.coupon.service.SeckillPromotionService;
 
-
+/**
+ * @author CZQ
+ */
 @Service("seckillPromotionService")
 public class SeckillPromotionServiceImpl extends ServiceImpl<SeckillPromotionDao, SeckillPromotionEntity> implements SeckillPromotionService {
 

@@ -10,9 +10,7 @@ import java.util.Map;
 /**
  * spu属性值
  *
- * @author leifengyang
- * @email leifengyang@gmail.com
- * @date 2019-10-01 21:08:49
+ * @author CZQ
  */
 public interface ProductAttrValueService extends IService<ProductAttrValueEntity> {
 
@@ -20,12 +18,13 @@ public interface ProductAttrValueService extends IService<ProductAttrValueEntity
 
     void saveProductAttr(List<ProductAttrValueEntity> collect);
 
+    List<ProductAttrValueEntity> baseAttrListforspu(Long spuId);
 
-    List<ProductAttrValueEntity> baseAttrlistforspu(Long spuId);
-
-
+    /**
+     * 修改商品规格
+     * @param spuId
+     * @param entities
+     */
     void updateSpuAttr(Long spuId, List<ProductAttrValueEntity> entities);
-
-
 }
 

@@ -6,13 +6,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * 退货原因
- * 
- * @author wanzenghui
- * @email lemon_wan@aliyun.com
- * @date 2021-09-02 22:57:46
+ *
+ * @author CZQ
  */
 @Data
 @TableName("oms_order_return_reason")

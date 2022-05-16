@@ -5,12 +5,8 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * @Description:
- * @Created: with IntelliJ IDEA.
- * @author: 夏沫止水
- * @createTime: 2020-07-11 16:20
- **/
-
+ * @author CZQ
+ */
 @Data
 public class SeckillOrderTo {
 

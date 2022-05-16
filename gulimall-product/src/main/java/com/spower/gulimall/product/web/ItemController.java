@@ -11,12 +11,8 @@ import javax.annotation.Resource;
 import java.util.concurrent.ExecutionException;
 
 /**
- * @Description:
- * @Created: with IntelliJ IDEA.
- * @author: jackc
- * @createTime: 2022-04-06 11:21
- **/
-
+ * @author CZQ
+ */
 @Controller
 public class ItemController {
 

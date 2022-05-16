@@ -12,13 +12,10 @@ import java.util.Arrays;
 import java.util.Map;
 
 
-
 /**
  * 仓库信息
  *
- * @author 夏沫止水
- * @email HeJieLin@gulimall.com
- * @date 2020-05-22 19:55:33
+ * @author CZQ
  */
 @RestController
 @RequestMapping("ware/wareinfo")
@@ -28,6 +25,7 @@ public class WareInfoController {
 
     /**
      * 获取运费信息
+     *
      * @return
      */
     @GetMapping(value = "/fare")
@@ -35,15 +33,14 @@ public class WareInfoController {
 
         FareVo fare = wareInfoService.getFare(addrId);
 
-        return R.ok();
+        return R.ok().setData(fare);
     }
 
     /**
      * 列表
      */
     @RequestMapping("/list")
-    //@RequiresPermissions("ware:wareinfo:list")
-    public R list(@RequestParam Map<String, Object> params){
+    public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = wareInfoService.queryPage(params);
 
         return R.ok().put("page", page);
@@ -54,9 +51,8 @@ public class WareInfoController {
      * 信息
      */
     @RequestMapping("/info/{id}")
-    //@RequiresPermissions("ware:wareinfo:info")
-    public R info(@PathVariable("id") Long id){
-		WareInfoEntity wareInfo = wareInfoService.getById(id);
+    public R info(@PathVariable("id") Long id) {
+        WareInfoEntity wareInfo = wareInfoService.getById(id);
 
         return R.ok().put("wareInfo", wareInfo);
     }
@@ -65,9 +61,8 @@ public class WareInfoController {
      * 保存
      */
     @RequestMapping("/save")
-    //@RequiresPermissions("ware:wareinfo:save")
-    public R save(@RequestBody WareInfoEntity wareInfo){
-		wareInfoService.save(wareInfo);
+    public R save(@RequestBody WareInfoEntity wareInfo) {
+        wareInfoService.save(wareInfo);
 
         return R.ok();
     }
@@ -76,9 +71,8 @@ public class WareInfoController {
      * 修改
      */
     @RequestMapping("/update")
-    //@RequiresPermissions("ware:wareinfo:update")
-    public R update(@RequestBody WareInfoEntity wareInfo){
-		wareInfoService.updateById(wareInfo);
+    public R update(@RequestBody WareInfoEntity wareInfo) {
+        wareInfoService.updateById(wareInfo);
 
         return R.ok();
     }
@@ -87,9 +81,8 @@ public class WareInfoController {
      * 删除
      */
     @RequestMapping("/delete")
-    //@RequiresPermissions("ware:wareinfo:delete")
-    public R delete(@RequestBody Long[] ids){
-		wareInfoService.removeByIds(Arrays.asList(ids));
+    public R delete(@RequestBody Long[] ids) {
+        wareInfoService.removeByIds(Arrays.asList(ids));
 
         return R.ok();
     }

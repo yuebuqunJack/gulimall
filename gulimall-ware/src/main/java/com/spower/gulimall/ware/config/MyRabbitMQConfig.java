@@ -1,9 +1,7 @@
 package com.spower.gulimall.ware.config;
 
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.Exchange;
-import org.springframework.amqp.core.Queue;
-import org.springframework.amqp.core.TopicExchange;
+import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,17 +9,14 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 
 /**
- * @Description:
- * @Created: with IntelliJ IDEA.
- * @author: 夏沫止水
- * @createTime: 2020-07-06 20:02
- **/
-
+ * @author CZQ
+ */
 @Configuration
 public class MyRabbitMQConfig {
 
     /**
      * 使用JSON序列化机制，进行消息转换
+     *
      * @return
      */
     @Bean
@@ -29,13 +24,19 @@ public class MyRabbitMQConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    // @RabbitListener(queues = "stock.release.stock.queue")
-    // public void handle(Message message) {
-    //
-    // }
+//    /**
+//     * 监听队列的消息：这里写的目的是为了立刻创建交换机和队列  用完记得删除！！！
+//     * @param message
+//     */
+//    @RabbitListener(queues = "stock.release.stock.queue")
+//    public void handle(Message message) {
+//        System.out.println(message);
+//
+//    }
 
     /**
      * 库存服务默认的交换机
+     *
      * @return
      */
     @Bean
@@ -47,6 +48,7 @@ public class MyRabbitMQConfig {
 
     /**
      * 普通队列
+     *
      * @return
      */
     @Bean
@@ -59,6 +61,7 @@ public class MyRabbitMQConfig {
 
     /**
      * 延迟队列
+     *
      * @return
      */
     @Bean
@@ -70,13 +73,14 @@ public class MyRabbitMQConfig {
         // 消息过期时间 2分钟
         arguments.put("x-message-ttl", 120000);
 
-        Queue queue = new Queue("stock.delay.queue", true, false, false,arguments);
+        Queue queue = new Queue("stock.delay.queue", true, false, false, arguments);
         return queue;
     }
 
 
     /**
      * 交换机与普通队列绑定
+     *
      * @return
      */
     @Bean
@@ -95,6 +99,7 @@ public class MyRabbitMQConfig {
 
     /**
      * 交换机与延迟队列绑定
+     *
      * @return
      */
     @Bean

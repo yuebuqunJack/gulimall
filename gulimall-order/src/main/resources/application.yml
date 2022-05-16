@@ -2,49 +2,79 @@ server:
   port: 9000
   servlet:
     session:
-      timeout: 30m
+      timeout: 3000m
 
 spring:
   application:
-    name: gulimall-order
+    name: gulimall-order-server
   datasource:
     username: root
-    password: root
+    password: 7410852963w
     url: jdbc:mysql://175.178.212.59:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-  #  cloud:
-  #    nacos:
-  #      discovery:
-  #        server-addr: localhost:8848
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
 
-  #    sentinel:
-  #      transport:
-  #        #配置sentinel dashboard地址
-  #        dashboard: localhost:8080
+## seata 配置
+#seata:
+#  # 分布式事务分组
+#  tx-service-group: default_tx_group
+#  # seata配置中心
+#  config:
+#    type: nacos
+#    nacos:
+#      namespace: 77e3c088-0088-4cce-a930-346899f8095f  #在安装seata目录下的conf中的register.conf的config节点中下的nacos节点的namespace。如果没有配置 默认public空间
+#      # nacos配置中心地址
+#      server-addr: 127.0.0.1:8848
+#      # 分组
+#      group: 'SEATA_GROUP'
+#      # nacos的账号和密码
+#      userName: 'nacos'
+#      password: 'nacos'
+#  # seata的注册中心
+#  registry:
+#    type: nacos
+#    nacos:
+#      application: seata-server
+#      server-addr: 127.0.0.1:8848
+#      namespace: 77e3c088-0088-4cce-a930-346899f8095f   #在安装seata目录下的conf中的register.conf的register节点中下的nacos节点的namespace。如果没有配置 默认public空间
+#      userName: 'nacos'
+#      password: 'nacos'
+#  service:
+#    vgroup-mapping:
+#      default_tx_group: default    #这里要特别注意和nacos中配置的要保持一直
 
-  #  redis:
-  #    host: 192.168.77.130
-  #    port: 6379
+#配置线程池
+gulimall:
+  thread:
+    coreSize: 20
+    maxSize: 200
+    keepAliveTime: 10
 
-  #开启feign对sentinel的支持
-  #feign:
-  #  sentinel:
-  #    enabled: true
+#开启feign对sentinel的支持
+feign:
+  sentinel:
+    enabled: true
 
-  #  jackson:
-  #    date-format: yyyy-MM-dd HH:mm:ss
-  #
-  #    #关闭thymeleaf缓存
-  #  thymeleaf:
-  #    cache: false
-  #
-  #  session:
-  #    store-type: redis
-  #
-  #mybatis-plus:
-  #  mapper-locations: classpath:/mapper/**/*.xml
-  #
+    #关闭thymeleaf缓存
+    thymeleaf:
+      cache: false
+
+    #session使用redis存储
+    session:
+      store-type: redis
+
+  mybatis-plus:
+    mapper-locations: classpath:/mapper/**/*.xml
+
   #  #设置实体类的自增主键
   global-config:
     db-config:
@@ -52,15 +82,14 @@ spring:
       #逻辑删除
       logic-delete-value: 1
       logic-not-delete-value: 0
-#
-#logging:
-#  level:
-#    com.spower.gulimall: error
-#
-#
-##暴露所有端点
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: '*'
+
+logging:
+  level:
+    com.spower.gulimall: error
+
+#暴露所有端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

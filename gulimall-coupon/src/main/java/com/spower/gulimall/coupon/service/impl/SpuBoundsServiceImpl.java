@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.SpuBoundsEntity;
 import com.spower.gulimall.coupon.service.SpuBoundsService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("spuBoundsService")
 public class SpuBoundsServiceImpl extends ServiceImpl<SpuBoundsDao, SpuBoundsEntity> implements SpuBoundsService {
 

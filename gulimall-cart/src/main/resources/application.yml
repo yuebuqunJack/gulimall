@@ -5,28 +5,21 @@ server:
 spring:
   application:
     name: gulimall-cart-server
-
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
-
     sentinel:
       transport:
         #配置sentinel dashboard地址
         dashboard: localhost:8080
-
-  redis:
-    port: 6379
-    host: 175.178.212.59
-  main:
-    allow-circular-references: true
+  #  main:
+#    allow-circular-references: true
 
 #开启feign对sentinel的支持
-feign:
-  sentinel:
-    enabled: true
-
+#feign:
+#  sentinel:
+#    enabled: true
 
   session:
     store-type: redis

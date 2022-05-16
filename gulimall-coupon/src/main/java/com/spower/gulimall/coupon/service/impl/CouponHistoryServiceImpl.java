@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.CouponHistoryEntity;
 import com.spower.gulimall.coupon.service.CouponHistoryService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("couponHistoryService")
 public class CouponHistoryServiceImpl extends ServiceImpl<CouponHistoryDao, CouponHistoryEntity> implements CouponHistoryService {
 

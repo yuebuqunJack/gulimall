@@ -1,4 +1,4 @@
-//PUT product
+//PUT product 索引结构
 {
   "mappings": {
     "properties": {

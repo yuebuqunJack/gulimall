@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.SkuLadderEntity;
 import com.spower.gulimall.coupon.service.SkuLadderService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("skuLadderService")
 public class SkuLadderServiceImpl extends ServiceImpl<SkuLadderDao, SkuLadderEntity> implements SkuLadderService {
 

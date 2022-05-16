@@ -20,6 +20,13 @@ spring:
             - RewritePath=/api/(?<segment>.*),/$\{segment}
           #RewritePath路径重写:前端访问http://localhost:88/api/product/category/list/tree  实际路径重写（访问）为http://localhost:10001/product/category/list/tree
 
+        - id: coupon_route
+          uri: lb://gulimall-coupon
+          predicates:
+            - Path=/api/coupon/**
+          filters:
+            - RewritePath=/api/(?<segment>/?.*),/$\{segment}
+
         - id: third_party_route
           uri: lb://gulimall-third-party
           predicates:
@@ -68,3 +75,18 @@ spring:
           uri: lb://gulimall-cart-server
           predicates:
             - Host=cart.gulimall.com
+
+        - id: gulimall_order_route
+          uri: lb://gulimall-order-server
+          predicates:
+            - Host=order.gulimall.com
+
+        - id: gulimall_member_route
+          uri: lb://gulimall-member-server
+          predicates:
+            - Host=member.gulimall.com
+
+        - id: gulimall_seckill_route
+          uri: lb://gulimall-seckill-server
+          predicates:
+            - Host=seckill.gulimall.com

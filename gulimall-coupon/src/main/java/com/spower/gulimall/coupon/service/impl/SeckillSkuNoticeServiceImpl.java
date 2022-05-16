@@ -13,6 +13,9 @@ import com.spower.gulimall.coupon.entity.SeckillSkuNoticeEntity;
 import com.spower.gulimall.coupon.service.SeckillSkuNoticeService;
 
 
+/**
+ * @author CZQ
+ */
 @Service("seckillSkuNoticeService")
 public class SeckillSkuNoticeServiceImpl extends ServiceImpl<SeckillSkuNoticeDao, SeckillSkuNoticeEntity> implements SeckillSkuNoticeService {
 

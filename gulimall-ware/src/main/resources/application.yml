@@ -9,39 +9,30 @@ spring:
     name: gulimall-ware
   datasource:
     username: root
-    password: root
+    password: 7410852963w
     url: jdbc:mysql://175.178.212.59:3306/gulimall_wms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+    redis:
+      host: 192.168.77.130
+      port: 6379
 
-  #    sentinel:
-  #      transport:
-  #        #配置sentinel dashboard地址
-  #        dashboard: localhost:8080
-
-  #  redis:
-  #    host: 192.168.77.130
-  #    port: 6379
-
-#  开启feign对sentinel的支持
-#  feign:
-#    sentinel:
-#      enabled: true
+# 开启feign对sentinel的支持
+  feign:
+    sentinel:
+      enabled: true
 
     jackson:
       date-format: yyyy-MM-dd HH:mm:ss
-  #
-  #    #关闭thymeleaf缓存
-  #  thymeleaf:
-  #    cache: false
-  #
-  #  session:
-  #    store-type: redis
-  #
-  mybatis-plus:
-    mapper-locations: classpath:/mapper/**/*.xml
-  #
-  #  #设置实体类的自增主键
+
+  #关闭thymeleaf缓存
+  thymeleaf:
+    cache: false
+
+    session:
+      store-type: redis
+
+  #设置实体类的自增主键
   global-config:
     db-config:
       id-type: auto
@@ -52,6 +43,9 @@ spring:
     nacos:
       config:
         server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8080
 #  jackson:  #可以将long型的id转json
 #    generator:
 #      write_numbers_as_strings: true
@@ -60,29 +54,24 @@ spring:
 #  jackson:
 #    generator:
 #      write_numbers_as_strings: true
-#
-#logging:
-#  level:
-#    com.spower.gulimall: error
-#
-#
-##暴露所有端点
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: '*'
+
+#暴露所有端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
 mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
   global-config:
     #字段策略 0:"忽略判断",1:"非 NULL 判断"),2:"非空判断"
     field-strategy: 0
-
 
 # 开启日志
 logging:
   level:
     com.spower.gulimall: debug
-#    # feign调用日志，链路日志
-#    org.springframework.cloud.openfeign: debug
-#    org.springframework.cloud.sleuth: debug
+    # feign调用日志，链路日志
+    org.springframework.cloud.openfeign: debug
+    org.springframework.cloud.sleuth: debug

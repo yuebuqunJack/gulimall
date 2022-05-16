@@ -13,9 +13,8 @@ import java.util.List;
 @FeignClient("gulimall-ware")
 public interface WareFeignService {
 
-    /**
-     * 查询sku是否有库存
-     */
-    @PostMapping("/ware/waresku/hasStock")  //ware/waresku/hasStock
-    R getSkusHasStock(@RequestBody List<Long> skuIds);
+    @PostMapping(value = "/ware/waresku/hasStock")
+    R getSkuHasStock(@RequestBody List<Long> skuIds);
+
 }
+

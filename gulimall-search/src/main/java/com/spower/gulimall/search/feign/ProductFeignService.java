@@ -6,15 +6,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 /**
- * @Author: wanzenghui
- * @Date: 2021/11/15 21:58
+ * @author CZQ
  */
+
 @FeignClient("gulimall-product")
 public interface ProductFeignService {
 
-    /**
-     * 查询属性
-     */
-    @GetMapping("/product/attr/info/{attrId}}")
-    R attrInfo(@PathVariable("attrId") Long attrId);
+    @GetMapping("/product/attr/info/{attrId}")
+    public R attrInfo(@PathVariable("attrId") Long attrId);
+
 }

@@ -5,7 +5,6 @@ import lombok.Data;
 /**
  * @author CZQ
  */
-
 @Data
 public class SkuHasStockVo {
 
