@@ -19,14 +19,14 @@ spring:
         port: 8719
 
   redis:
-    host: 175.178.212.59
+    host: --
     port: 6379
 
   session:
     store-type: redis
   #服务追踪
   zipkin:
-    base-url: http://175.178.212.59:9411/
+    base-url: --
     discovery-client-enabled: false
     sender:
       type: web
